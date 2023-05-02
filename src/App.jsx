@@ -24,18 +24,26 @@ export default function App() {
   const [textboxValue, setTextboxValue] = useState('');
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-  function downloadJsonButton() {
-    alert('Download not available yet');
+  function downloadJsonButton() { 
+    
+    var downloadJsonString = 'Download not working yet'
+    alert(downloadJsonString);
+    var jsonDict = {'test': downloadJsonString}
+    var dictstring = JSON.stringify(jsonDict)
   }
+
   function runFlowButton() {
-    alert('runFlow not working yet');
+    var runFlowString = 'runFlow not working yet'
+    alert(runFlowString);
   }
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <button onClick={runFlowButton}>Run flow</button>
       <div style={{float: 'right'}}>
         <button onClick={downloadJsonButton}>Download Flow as Json</button>
       </div>
+      <input type="text" value={textboxValue} onChange={e => setTextboxValue(e.target.value)} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -47,7 +55,7 @@ export default function App() {
         <Controls />
         <MiniMap />
         <Background variant="dots" gap={12} size={1} />
-        <input type="text" value={textboxValue} onChange={e => setTextboxValue(e.target.value)} />
+        
         
       </ReactFlow>
       
