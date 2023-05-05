@@ -8,11 +8,11 @@ import ReactFlow, {
   useEdgesState,
 } from 'reactflow';
 
-import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
+//import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
 import CustomNode from './CustomNode';
 
 import 'reactflow/dist/style.css';
-import './overview.css';
+//import './overview.css';
 
 const nodeTypes = {
   custom: CustomNode,

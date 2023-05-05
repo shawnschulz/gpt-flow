@@ -9,14 +9,14 @@ import ReactFlow, {
   EdgeText
 } from 'reactflow';
 
+import { MarkerType, Position } from 'reactflow';
+
 import 'reactflow/dist/style.css';
 import { useState } from 'react';
+//import CustomNode from './CustomNode'
 
-const exportToJson = (nodes, edges) => {
-  const data = {
-    nodes: nodes,
-    edges: edges,
-  };
+const exportToJson = (data) => {
+  //This just turns dictionary style objects itno a json and then downloads it
   const fileData = JSON.stringify(data);
   const blob = new Blob([fileData], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -27,7 +27,7 @@ const exportToJson = (nodes, edges) => {
 };
 
 const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
+  { id: '1', position: { x: 0, y: 0 }, data: { label: '1', selects: {'handle-0': 'smoothstep'} } },
   { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
 ];
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
@@ -40,22 +40,31 @@ export default function App() {
   const [textboxValue, setTextboxValue] = useState('');
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-  function downloadJsonButton(nodes, edges) { 
+  function downloadJsonButton(data) { 
     
-    exportToJson(nodes, edges)
+    exportToJson(data)
   }
 
-  function runFlowButton() {
-    var runFlowString = JSON.stringify(edges)
+  function runFlowButton(data) {
+    var runFlowString = JSON.stringify(data)
+    var runFlowString = JSON.stringify(nodes.find((n) => n.id === nodeId))
     alert(runFlowString);
 
   }
 
+  function makeJsonData(nodes, edges){
+    // Makes a properly formatted json given the node info and edges THIS MAY NEED TO CHANGE TO TAKE CUSTOM NODE INFO INPUT
+  }
+
+  const data = {
+    nodes: nodes,
+    edges: edges,
+  };
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <button onClick={() => runFlowButton(nodes, edges)}>Run flow</button>
+      <button onClick={() => runFlowButton(data)}>Run flow</button>
       <div style={{float: 'right'}}>
-        <button onClick={() => downloadJsonButton(nodes, edges)}>Download Flow as Json</button>
+        <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
       </div>
       <input type="text" value={textboxValue} onChange={e => setTextboxValue(e.target.value)} />
       <ReactFlow
@@ -66,10 +75,8 @@ export default function App() {
         onConnect={onConnect}
         
       >
-      <button onClick={() => runFlowButton(nodes, edges)}>Run flow</button>
         <Controls />
         <Background variant="dots" gap={12} size={1} />
-        <button onClick={exportToJson}>Export JSON</button>
 
         
       </ReactFlow>
