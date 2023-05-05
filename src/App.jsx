@@ -32,11 +32,7 @@ const initialNodes = [
 ];
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
-import CustomNode from './llm_node';
 
-const nodeTypes = {
-  custom: CustomNode,
-};
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -44,36 +40,23 @@ export default function App() {
   const [textboxValue, setTextboxValue] = useState('');
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-<<<<<<< HEAD
   function downloadJsonButton(nodes, edges) { 
-=======
-  function downloadJsonButton(nodes, edges, nodeInfo = "this might not be necessary if we can just store attributes in node class") { 
->>>>>>> refs/remotes/origin/main
     
     exportToJson(nodes, edges)
   }
 
-<<<<<<< HEAD
   function runFlowButton() {
     var runFlowString = JSON.stringify(edges)
-=======
-  function runFlowButton(nodes, edges) {
-    var runFlowString = 'runFlow not working yet'
->>>>>>> refs/remotes/origin/main
     alert(runFlowString);
-    initialEdges[0]['']
 
   }
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-<<<<<<< HEAD
       <button onClick={() => runFlowButton(nodes, edges)}>Run flow</button>
       <div style={{float: 'right'}}>
         <button onClick={() => downloadJsonButton(nodes, edges)}>Download Flow as Json</button>
       </div>
-=======
->>>>>>> refs/remotes/origin/main
       <input type="text" value={textboxValue} onChange={e => setTextboxValue(e.target.value)} />
       <ReactFlow
         nodes={nodes}
@@ -83,9 +66,6 @@ export default function App() {
         onConnect={onConnect}
         
       >
-      <div style={{float: 'right'}}>
-        <button onClick={() => downloadJsonButton(nodes, edges)}>Download Flow as Json</button>
-      </div>
       <button onClick={() => runFlowButton(nodes, edges)}>Run flow</button>
         <Controls />
         <Background variant="dots" gap={12} size={1} />
