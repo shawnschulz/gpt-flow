@@ -1,4 +1,6 @@
 import React, { useCallback } from 'react';
+import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import 'reactflow/dist/style.css';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -12,7 +14,17 @@ import ReactFlow, {
 import { MarkerType, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useState } from 'react';
-//import CustomNode from './CustomNode'
+
+import TextInputNode from './TextInputNode.jsx';
+
+import './TextInputNodeStyle.css';
+
+import './updateNode.css';
+
+
+const rfStyle = {
+  backgroundColor: '#faf5ff',
+};
 
 const exportToJson = (dictionary) => {
   //This just turns dictionary style objects itno a json and then downloads it
@@ -25,18 +37,21 @@ const exportToJson = (dictionary) => {
   link.click();
 };
 
+const nodeTypes = { textInput: TextInputNode };
+
 const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1', selects: {'handle-0': 'smoothstep'} } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
+  { id: 'node-1', position: { x: 0, y: 0 }, type: 'textInput', data: { value: 123 } },
+  { id: 'node-2', position: { x: 0, y: 100 }, type: 'textInput', data: { value: 123 } },
 ];
+
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 
 
 export default function App() {
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [textboxValue, setTextboxValue] = useState('');
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   
@@ -94,14 +109,14 @@ export default function App() {
       <div style={{float: 'right'}}>
         <button onClick={() => downloadJsonButton(makeJsonData(data))}>Download Flow as Json</button>
       </div>
-      <input type="text" value={textboxValue} onChange={e => setTextboxValue(e.target.value)} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        
+        nodeTypes={nodeTypes}
+        style={rfStyle}
       >
         <Controls />
         <Background variant="dots" gap={12} size={1} />
