@@ -19,7 +19,9 @@ import TextInputNode from './TextInputNode.jsx';
 
 import './TextInputNodeStyle.css';
 
-import './updateNode.css';
+
+
+//import './updateNode.css';
 
 
 const rfStyle = {
@@ -28,7 +30,7 @@ const rfStyle = {
 
 const exportToJson = (dictionary) => {
   //This just turns dictionary style objects itno a json and then downloads it
-  const fileData = JSON.stringify(data);
+  const fileData = JSON.stringify(dictionary);
   const blob = new Blob([fileData], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -107,7 +109,7 @@ export default function App() {
     <div style={{ width: '100vw', height: '100vh' }}>
       <button onClick={() => runFlowButton(data)}>Run flow</button>
       <div style={{float: 'right'}}>
-        <button onClick={() => downloadJsonButton(makeJsonData(data))}>Download Flow as Json</button>
+        <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
       </div>
       <ReactFlow
         nodes={nodes}
