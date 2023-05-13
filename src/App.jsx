@@ -39,6 +39,12 @@ const exportToJson = (dictionary) => {
   link.click();
 };
 
+const createNode = (node_id, nodes) => {
+  const node = { id: String(node_id), position: { x: 0, y: 0 }, type: 'textInput', data: { value: 123 } }
+  nodes.push(node)
+  return(nodes)
+};
+
 const nodeTypes = { textInput: TextInputNode };
 
 const initialNodes = [
@@ -70,47 +76,37 @@ export default function App() {
 
   }
 
-  function makeJsonData(data){
-    // Makes a properly formatted json given the node info and edges THIS MAY NEED TO CHANGE TO TAKE CUSTOM NODE INFO INPUT
-    // I think the Json itself has to be nested, either a list of dictionaries or dictionary of dictionaries, lets try list first
-    //const jsonDict = {
-    //  nodeID: 
-     // nodeInfo: {
-      //position:"",
-      //type: "",
-      //values: [{value:"", valueId:"", nodeId:""}]
-      //}
-    //}
-    // loop through nodes in nodes
-    let temp_nodes = data[nodes]
-    let temp_edges = data[edges]
-    const jsonDict = new Object();
-    loopIterationCounter = 0
-    for (let node in temp_nodes[nodes]) {
-      jsonDict[nodeID] = node[id]
-      jsonDict[nodeID][nodeInfo] = new Object()
-      jsonDict[nodeID][nodeInfo][position] = node[position]
-      jsonDict[nodeID][nodeInfo][type] = node[type]
-      jsonDict[nodeID][nodeInfo][values] = node[values]
-      // this should hopefully get all the next temp_nodes in the correct order, could be a source of bugs tho 
-      if (loopIterationCounter < temp_edges.length){
-        jsonDict[nodeID][nodeInfo][edges] = temp_edges[loopIterationCounter][target]
-      }
-    }
-    alert(JSON.stringify(data));
-    return jsonDict;
-  }
+  
 
   const data = {
     nodes: nodes,
     edges: edges,
   };
+
+  const getNodeId = () => `${String(+new Date()).slice(6)}`;
+
+const onAdd = () => {
+    const id = getNodeId();
+    const newNode = {
+      id,
+      data: { label: `${id})` },
+      position: {
+        x: 0,
+        y: 0 + (nodes.length + 1) * 20
+      },
+      type:'textInput'
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }; 
+  
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <button onClick={() => runFlowButton(data)}>Run flow</button>
       <div style={{float: 'right'}}>
         <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
       </div>
+
+      <button onClick={onAdd}>Add node</button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
