@@ -7,18 +7,11 @@ import { Handle, Position } from 'reactflow';
 
 
 
-function TextInputNode({ data, isConnectable }) {
+function TextInputNode({ data, isConnectable, inputValue, setInputValue }) {
 
-  
-
-
- 
-
-  
-
-
-
-  const [editState, setEditState] = useState({ prompt: "" });
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
 
   const onEdit = (newPrompt) => {
     setNodes((nds) =>
@@ -33,9 +26,10 @@ function TextInputNode({ data, isConnectable }) {
   };
 
 
+
   return (
     <div className="text-updater-node">
-      <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
+      <Handle type="target" position={Position.Left} isConnectable={isConnectable} />
       
 
       <div>
@@ -47,14 +41,13 @@ function TextInputNode({ data, isConnectable }) {
       <textarea
         className='nodrag'
         type="text"
-        onChange={(e) => {
-          onEdit(e.target.value)
-        }}
+        value={inputValue}
+        onChange={handleChange}
       /> 
 
 
       </div>
-      <Handle type="source" position={Position.Bottom} id="b" isConnectable={isConnectable} />
+      <Handle type="source" position={Position.Right} id="b" isConnectable={isConnectable} />
     </div>
   );
 }

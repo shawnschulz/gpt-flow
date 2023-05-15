@@ -10,8 +10,7 @@ import ReactFlow, {
   addEdge,
   EdgeText
 } from 'reactflow';
-
-import { MarkerType, Position } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode.jsx';
@@ -51,6 +50,7 @@ const initialNodes = [
 ];
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+
 
 
 
@@ -96,22 +96,29 @@ const onAdd = () => {
     };
     setNodes((nds) => nds.concat(newNode));
   }; 
+ 
   
   return (
+    
     <div className="container">
-
+  
       <div className="otherComponents">
 
-              <div style={{ width: '100vw', height: '100vh' }}>
-            <button onClick={() => runFlowButton(data)}>Run flow</button>
+              <div style={{ width: '79vw', height: '96vh' }}>
             <div style={{float: 'right'}}>
               <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
             </div>
 
 
+          <div style={{float: 'left'}}>
+          <button onClick={onAdd}>Add node</button>
 
 
-            <button onClick={onAdd}>Add node</button>
+          </div>
+
+          <div style= {{float: 'middle'}}>
+          <button onClick={() => runFlowButton(data)}>Run flow</button>
+          </div>
             <div style={{float: 'right'}}>
       
 
@@ -136,7 +143,7 @@ const onAdd = () => {
     </div>
 
 
-    <div className="myComponent">
+    <div className="myComponent" style={{ width: '100', height: '1vh' }}>
       <Chatbot config={config} actionProvider={ActionProvider} 	    messageParser={MessageParser} />
 
     </div>
