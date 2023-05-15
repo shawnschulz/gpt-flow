@@ -18,17 +18,15 @@ function TextInputNode({ data, isConnectable }) {
 
 
 
+  const [editState, setEditState] = useState({ prompt: "" });
 
-  const onEdit = () => {
+  const onEdit = (newPrompt) => {
     setNodes((nds) =>
       nds.map((node) => {
-        if (node.id === editState.id) {
           node.data = {
             ...node.data,
-            label: `${node.id})`
+            prompt: `${newPrompt})`
           };
-        }
-
         return node;
       })
     );
@@ -45,11 +43,12 @@ function TextInputNode({ data, isConnectable }) {
  
                     
 
-      {" "}
-      <input
+      {"Prompt"}
+      <textarea
+        className='nodrag'
         type="text"
         onChange={(e) => {
-
+          onEdit(e.target.value)
         }}
       /> 
 
