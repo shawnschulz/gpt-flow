@@ -12,14 +12,17 @@ import ReactFlow, {
 } from 'reactflow';
 
 import { MarkerType, Position } from 'reactflow';
-import 'reactflow/dist/style.css';
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode.jsx';
+import Chatbot from 'react-chatbot-kit'
 
 import './TextInputNodeStyle.css';
-
-
+import './App.css'
+import ActionProvider from './bot/ActionProvider';
+import MessageParser from './bot/MessageParser';
+import config from './bot/config';
+import 'react-chatbot-kit/build/main.css';
 
 //import './updateNode.css';
 
@@ -95,29 +98,57 @@ const onAdd = () => {
   }; 
   
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <button onClick={() => runFlowButton(data)}>Run flow</button>
-      <div style={{float: 'right'}}>
-        <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
-      </div>
+    <div className="container">
 
-      <button onClick={onAdd}>Add node</button>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        style={rfStyle}
-      >
-        <Controls />
-        <Background variant="dots" gap={12} size={1} />
+      <div className="otherComponents">
 
-        
-      </ReactFlow>
+              <div style={{ width: '100vw', height: '100vh' }}>
+            <button onClick={() => runFlowButton(data)}>Run flow</button>
+            <div style={{float: 'right'}}>
+              <button onClick={() => downloadJsonButton(data)}>Download Flow as Json</button>
+            </div>
+
+
+
+
+            <button onClick={onAdd}>Add node</button>
+            <div style={{float: 'right'}}>
+      
+
+        </div> 
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              nodeTypes={nodeTypes}
+              style={rfStyle}
+            >
+              <Controls />
+              <Background variant="dots" gap={12} size={1} />
+
+              
+            </ReactFlow>
+
+          </div>
+    
+    </div>
+
+
+    <div className="myComponent">
+      <Chatbot config={config} actionProvider={ActionProvider} 	    messageParser={MessageParser} />
 
     </div>
+      
+
+    </div>
+      
+
+    
+   
+
+    
   );
 
   // Usage
