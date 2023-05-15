@@ -39,11 +39,6 @@ const exportToJson = (dictionary) => {
   link.click();
 };
 
-const createNode = (node_id, nodes) => {
-  const node = { id: String(node_id), position: { x: 0, y: 0 }, type: 'textInput', data: { value: 123 } }
-  nodes.push(node)
-  return(nodes)
-};
 
 const nodeTypes = { textInput: TextInputNode };
 

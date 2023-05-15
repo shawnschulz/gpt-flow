@@ -2,41 +2,22 @@ import { useCallback } from 'react';
 import React, { useState } from 'react';
 
 import { Handle, Position } from 'reactflow';
-import EditableLabel from './EditableLabel';
-import EdiText from 'react-editext'
 
 
-const handleStyle = { left: 10 };
+
 
 
 function TextInputNode({ data, isConnectable }) {
 
   
 
-  const onChange = useCallback((evt) => {
-    console.log(evt.target.value);
-  }, []);
-  const handleRemove = (e) => {
-    e.stopPropagation(); // Prevent triggering node selection
-    remove(id); // Remove the node using the remove function provided by React Flow
-  };
+
+ 
 
   
-  
-  const EditableLabel = (props) => {
-    const { text, onInput } = props;
-  
-    const handleInput = (event) => {
-      onInput(event.target.textContent);
-    };
-  }  
 
-  const [value, setValue] = useState('[Define a role for this AI]');
-  const [prompt_value, setValue2] = useState('[Enter a prompt]'); 
-  const handleSave = (val) => {
-    console.log('Edited Value -> ', val);
-    setValue(val);
-  };
+
+
 
   const onEdit = () => {
     setNodes((nds) =>
@@ -64,11 +45,11 @@ function TextInputNode({ data, isConnectable }) {
  
                     
 
-      Name:{" "}
+      {" "}
       <input
         type="text"
         onChange={(e) => {
-          setEditState((prev) => ({ ...prev, name: e.target.value }));
+
         }}
       /> 
 
