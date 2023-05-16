@@ -17,12 +17,12 @@ import TextInputNode from './TextInputNode.jsx';
 import Chatbot from 'react-chatbot-kit'
 
 import './TextInputNodeStyle.css';
-import './App.css'
+
 import ActionProvider from './bot/ActionProvider';
 import MessageParser from './bot/MessageParser';
 import config from './bot/config';
 import 'react-chatbot-kit/build/main.css';
-
+import './App.css'
 //import './updateNode.css';
 
 
@@ -143,8 +143,8 @@ const onAdd = () => {
     </div>
 
 
-    <div className="myComponent" style={{ width: '100', height: '1vh' }}>
-      <Chatbot config={config} actionProvider={ActionProvider} 	    messageParser={MessageParser} />
+    <div className="myComponent" style={{ width: '100', height: '100vh' }}>
+      <Chatbot  style={{ width: '100000', height: '1000vh' }} config={config} actionProvider={ActionProvider} 	    messageParser={MessageParser} />
 
     </div>
       

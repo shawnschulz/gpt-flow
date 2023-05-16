@@ -9,8 +9,20 @@
 body { margin: 0; }
 
 .react-chatbot-kit-chat-container {
-  position: absolute;
-  width: 150000px;
+  justify-content: flex-end;
+  width: 170%;
+  height: 100%;
+  height:97vh;
+}
+.react-chatbot-kit-chat-inner-container {
+  height:100vh;
+}
+
+.react-chatbot-kit-chat-input-container {
+  height: 5vh;
+}
+.react-chatbot-kit-chat-message-container {
+width: 50;
 }
 
 .container {
@@ -26,6 +38,7 @@ body { margin: 0; }
 
 .otherComponents {
   flex-grow: 2;
+  height:100vh;
 }
 
 
