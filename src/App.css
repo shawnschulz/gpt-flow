@@ -41,5 +41,7 @@ width: 50;
   height:100vh;
 }
 
-
+.react-flow__background{
+  height: 100vh;
+}
 
