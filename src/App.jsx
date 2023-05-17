@@ -68,9 +68,7 @@ export default function App() {
   }
 
   function runFlowButton(data) {
-    var runFlowString = JSON.stringify(data)
-    var runFlowString = JSON.stringify(nodes.find((n) => n.id === nodeId))
-    alert(runFlowString);
+    alert("blah blah");
 
   }
 
@@ -99,7 +97,6 @@ const onAdd = () => {
  
   
   return (
-    
     <div className="container">
   
       <div className="otherComponents">
@@ -139,7 +136,7 @@ const onAdd = () => {
             </ReactFlow>
 
           </div>
-    
+
     </div>
 
 

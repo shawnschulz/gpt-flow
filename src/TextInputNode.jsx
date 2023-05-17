@@ -10,7 +10,21 @@ import { Handle, Position } from 'reactflow';
 function TextInputNode({ data, isConnectable, inputValue, setInputValue }) {
 
   const handleChange = (event) => {
+
+    const promptInput = event.target.value
+    alert(promptInput)
     setInputValue(event.target.value);
+    setNodes((nds) =>
+      nds.map((node) => {
+          node.data = {
+            ...node.data,
+            prompt: `${event.target.value})`
+          };
+        return node;
+      })
+    );
+    alert(node.data)
+    return(promptInput)
   };
 
   const onEdit = (newPrompt) => {
@@ -51,7 +65,7 @@ function TextInputNode({ data, isConnectable, inputValue, setInputValue }) {
         onChange={handleChange}
       /> 
 
-
+      
       </div>
       <Handle type="source" position={Position.Right} id="right" isConnectable={isConnectable } style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
