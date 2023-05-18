@@ -95,7 +95,7 @@ function Flow() {
  // };
 
  const onRestore = (selectedFile) =>{
-  const flow = selectedFile;
+  const flow = JSON.parse(selectedFile);
   alert(flow)
   setNodes(flow["nodes"] || []);
   setEdges(flow["edges"] || []);
