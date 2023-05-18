@@ -62,11 +62,6 @@ const exportToJson = (dictionary) => {
 const nodeTypes = { textInput: TextInputNode };
 
 
-const initialNodes = [
-  { id: "000001", position: { x: 0, y: 0 }, type: 'textInput', data: { label: '[Enter a prompt here]' } },
-  { id: "000002", position: { x: 0, y: 100 }, type: 'textInput', data: { label: '[Enter a prompt here]' } },
-];
-
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 
@@ -100,27 +95,21 @@ function Flow() {
  // };
 
  const onRestore = (selectedFile) =>{
-  const jsonFile = selectedFile
-  alert(jsonFile)
-
-  const uploadedJson = jsonFile
-  const flow = JSON.parse(uploadedJson);
-  alert(JSON.stringify(flow))
-  setNodes(flow.nodes || []);
-  setEdges(flow.edges || []);
+  const flow = selectedFile;
+  alert(flow)
+  setNodes(flow["nodes"] || []);
+  setEdges(flow["edges"] || []);
  }
-  
-
-
- 
-
 
   const [selectedFile, setSelectedFile] = useState();
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.file);
-  };
-  const handleSubmission = () => {
-  };
+  const handleFileVariable = (e) => {
+      const fileReader = new FileReader();
+      fileReader.readAsText(e.target.files[0], "UTF-8");
+      fileReader.onload = e => {
+        console.log("e.target.result", e.target.result);
+        setSelectedFile(e.target.result)
+      };      
+     };
 
   return (
     <div className="container">
@@ -134,7 +123,7 @@ function Flow() {
           </div>
 
           <div style={{float: 'right'}}>
-            <input type="file" name="file" onChange={changeHandler} /> <button onClick={(selectedFile) => onRestore(selectedFile)}>Load</button>
+            <input type="file" name="file" accept=".json" onChange={(e) => handleFileVariable(e)} /> <button onClick={() => onRestore(selectedFile)}>Load</button>
           </div>
           
           <div style={{float: 'left'}}>
