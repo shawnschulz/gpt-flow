@@ -24,7 +24,7 @@ import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
 import ActionProvider from './bot/ActionProvider';
 import MessageParser from './bot/MessageParser';
-import config from './bot/config';
+import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
 //import './updateNode.css';
@@ -35,6 +35,7 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   addChildNode: state.addChildNode,
+  setNodes: state.setNodes
 });
 
 const rfStyle = {
@@ -72,7 +73,7 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 
 function Flow() {
-  const { nodes, onNodesChange, addChildNode } = useStore(selector, shallow);
+  const { nodes, onNodesChange, setNodes, addChildNode } = useStore(selector, shallow);
   const store = useStoreApi();
 
  // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -98,47 +99,52 @@ function Flow() {
  //   edges: edges,
  // };
 
-  const getNodeId = () => `${String(+new Date()).slice(6)}`;
+ const onRestore = (selectedFile) =>{
+  const jsonFile = selectedFile
+  alert(jsonFile)
 
-  const onAdd = () => {
-      const id = getNodeId();
-      const newNode = {
-        id,
-        data: { label: `[Enter a prompt here]` },
-        position: {
-          x: 0,
-          y: 0 + (nodes.length + 1) * 20
-        },
-        type:'textInput'
-      };
-      setNodes((nds) => nds.concat(newNode));
-    }; 
-
+  const uploadedJson = jsonFile
+  const flow = JSON.parse(uploadedJson);
+  alert(JSON.stringify(flow))
+  setNodes(flow.nodes || []);
+  setEdges(flow.edges || []);
+ }
   
+
+
+ 
+
+
+  const [selectedFile, setSelectedFile] = useState();
+  const changeHandler = (event) => {
+    setSelectedFile(event.target.file);
+  };
+  const handleSubmission = () => {
+  };
+
   return (
     <div className="container">
   
       <div className="otherComponents">
 
-              <div style={{ width: '79vw', height: '96vh' }}>
-            <div style={{float: 'right'}}>
-              <button onClick={() => downloadJsonButton({nodes: nodes, edges: edges})}>Download Flow as Json</button>
-            </div>
+        <div style={{ width: '79vw', height: '96vh' }}>
+          
+          <div style={{float: 'right'}}>
+            <button onClick={() => downloadJsonButton({nodes: nodes, edges: edges})}>Download Flow as Json</button>
+          </div>
 
-
+          <div style={{float: 'right'}}>
+            <input type="file" name="file" onChange={changeHandler} /> <button onClick={(selectedFile) => onRestore(selectedFile)}>Load</button>
+          </div>
+          
           <div style={{float: 'left'}}>
-          <button onClick={addChildNode}>Add node</button>
-
-
+            <button onClick={addChildNode}>Add node</button>
           </div>
 
-          <div style= {{float: 'middle'}}>
-          <button onClick={function(event){ {onNodesChange}; () => runFlowButton({nodes: nodes, edges: edges})} }>Run flow</button>
+          <div>
+            <button onClick={function(event){ {onNodesChange}; () => runFlowButton({nodes: nodes, edges: edges})} }>Run flow</button>
           </div>
-            <div style={{float: 'right'}}>
-      
 
-        </div> 
       
             <ReactFlow
               nodes={nodes}
