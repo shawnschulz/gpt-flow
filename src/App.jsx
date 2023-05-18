@@ -15,7 +15,7 @@ import { useState } from 'react';
 
 import TextInputNode from './TextInputNode.jsx';
 import Chatbot from 'react-chatbot-kit'
-
+import {useEffect} from 'react';
 import './TextInputNodeStyle.css';
 
 import ActionProvider from './bot/ActionProvider';
@@ -41,12 +41,17 @@ const exportToJson = (dictionary) => {
   link.click();
 };
 
+//Couldn't figure out how to get this to work so copied my custom node in
+
+
+//
+
 
 const nodeTypes = { textInput: TextInputNode };
 
 const initialNodes = [
-  { id: 'node-1', position: { x: 0, y: 0 }, type: 'textInput', data: { value: 123 } },
-  { id: 'node-2', position: { x: 0, y: 100 }, type: 'textInput', data: { value: 123 } },
+  { id: 'node-1', position: { x: 0, y: 0 }, type: 'textInput', data: { test: '' } },
+  { id: 'node-2', position: { x: 0, y: 100 }, type: 'textInput', data: { test: '' } },
 ];
 
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
@@ -68,7 +73,7 @@ export default function App() {
   }
 
   function runFlowButton(data) {
-    alert("blah blah");
+    alert(JSON.stringify(nodes));
 
   }
 
@@ -81,20 +86,20 @@ export default function App() {
 
   const getNodeId = () => `${String(+new Date()).slice(6)}`;
 
-const onAdd = () => {
-    const id = getNodeId();
-    const newNode = {
-      id,
-      data: { label: `${id})` },
-      position: {
-        x: 0,
-        y: 0 + (nodes.length + 1) * 20
-      },
-      type:'textInput'
-    };
-    setNodes((nds) => nds.concat(newNode));
-  }; 
- 
+  const onAdd = () => {
+      const id = getNodeId();
+      const newNode = {
+        id,
+        data: { label: `${id})` },
+        position: {
+          x: 0,
+          y: 0 + (nodes.length + 1) * 20
+        },
+        type:'textInput'
+      };
+      setNodes((nds) => nds.concat(newNode));
+    }; 
+
   
   return (
     <div className="container">
@@ -120,6 +125,7 @@ const onAdd = () => {
       
 
         </div> 
+      
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -132,7 +138,7 @@ const onAdd = () => {
               <Controls />
               <Background variant="dots" gap={12} size={1} />
 
-              
+    
             </ReactFlow>
 
           </div>

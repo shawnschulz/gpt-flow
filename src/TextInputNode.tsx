@@ -1,13 +1,15 @@
 import { useCallback } from 'react';
 import React, { useState } from 'react';
 
-import { Handle, Position } from 'reactflow';
+import { NodeProps, Handle, Position } from 'reactflow';
 import { useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState } from 'reactflow';
 
+export type NodeData = {
+  label: string;
+};
 
-
-function TextInputNode({ id, data, isConnectable }) {
+function TextInputNode({ id, data }: NodeProps<NodeData>) {
 
   const [nodeData, setNodeData] = useState({
      id: 'node-1', 
@@ -15,24 +17,11 @@ function TextInputNode({ id, data, isConnectable }) {
      type: 'textInput', 
      data: { test: '' } });
 
-    const updateNodeData = (newPrompt) => {
-      setNodeData((nds) =>
-      nds.map((node) => {
-        if (node.id === editState.id) {
-          node.data = {
-            ...node.data,
-            prompt: `${newPrompt}`
-          };
-        }
-
-        return node;
-      })
-    );
-  };
+   
 
   return (
     <div className="text-updater-node">
-      <Handle type="target" position={Position.Left} id="left" isConnectable={isConnectable} style={{ // Make the handle invisible and increase the touch area
+      <Handle type="target" position={Position.Left} id="left" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
         border: 'none',
@@ -57,21 +46,21 @@ function TextInputNode({ id, data, isConnectable }) {
 
       
       </div>
-      <Handle type="source" position={Position.Right} id="right" isConnectable={isConnectable } style={{ // Make the handle invisible and increase the touch area
+      <Handle type="source" position={Position.Right} id="right" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
         border: 'none',
         width: '20px',
         height: '20px',
       }}/>
-      <Handle type="target" position={Position.Top} id="top" isConnectable={isConnectable} style={{ // Make the handle invisible and increase the touch area
+      <Handle type="target" position={Position.Top} id="top" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
         border: 'none',
         width: '20px',
         height: '20px',
       }}/>
-      <Handle type="source" position={Position.Bottom} id="bottom" isConnectable={isConnectable} style={{ // Make the handle invisible and increase the touch area
+      <Handle type="source" position={Position.Bottom} id="bottom" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
         border: 'none',
