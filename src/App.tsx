@@ -19,7 +19,7 @@ import {useEffect} from 'react';
 import './TextInputNodeStyle.css';
 
 import { shallow } from 'zustand/shallow';
-
+import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
 import ActionProvider from './bot/ActionProvider';
@@ -71,7 +71,7 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 
 
-export default function App() {
+function Flow() {
   const { nodes, onNodesChange, addChildNode } = useStore(selector, shallow);
   const store = useStoreApi();
 
@@ -127,7 +127,7 @@ export default function App() {
 
 
           <div style={{float: 'left'}}>
-          <button onClick={onAdd}>Add node</button>
+          <button onClick={addChildNode}>Add node</button>
 
 
           </div>
@@ -178,3 +178,8 @@ export default function App() {
   // Usage
 
 }
+export default () => (
+  <ReactFlowProvider>
+    <Flow />
+  </ReactFlowProvider>
+);
