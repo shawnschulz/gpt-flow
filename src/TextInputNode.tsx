@@ -4,22 +4,18 @@ import React, { useState } from 'react';
 import { NodeProps, Handle, Position } from 'reactflow';
 import { useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState } from 'reactflow';
+import { OnNodesChange } from 'reactflow';
+import useStore from '../store';
+
 
 export type NodeData = {
   label: string;
 };
 
 function TextInputNode({ id, data }: NodeProps<NodeData>) {
+  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 
-  const [nodeData, setNodeData] = useState({
-     id: 'node-1', 
-     position: { x: 0, y: 0 }, 
-     type: 'textInput', 
-     data: { test: '' } });
-
-   
-
-  return (
+   return (
     <div className="text-updater-node">
       <Handle type="target" position={Position.Left} id="left" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
@@ -35,13 +31,12 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
  
                     
 
-      {"Prompt"}
+      {`${id}`}
       <textarea
         className='nodrag'
-        value = {nodeData.data.input}
-        onChange ={(e) => {
-          setNodeData((prev) => ({ ...prev, prompt: e.target.value }));
-        }}
+        value={data.label}
+
+        onChange={(evt) => updateNodeLabel(id, evt.target.value)}
       /> 
 
       
