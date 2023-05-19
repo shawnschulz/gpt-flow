@@ -9,9 +9,10 @@ TODOs
 5. Make the webserver 
 6. Rebase experimental branch to new main branch
 7. Change edge behavior such that source/target is not based on what side of node it's on but rather on where edge was dragged from, add visual indicator for what direction edge is pointing
-8. Incorporate hf agents 
-9. Add option to use chatgpt api key
-10. Add option to run local models
+8. Improve selection of nodes, add some hotkey for drag select, allow shift clicking to select mutliple nodes, make visual indicator that node is selected
+10. Incorporate hf agents 
+11. Add option to use chatgpt api key
+12. Add option to run local models
 ~~7. Add text output chat screen~~
 8. Add regular chatbot functionality to text output screen
 
