@@ -138,7 +138,13 @@ function Flow() {
 
 
     <div className="myComponent" style={{ width: '100', height: '100vh' }}>
-      <Chatbot  style={{ width: '100000', height: '1000vh' }} config={config} actionProvider={ActionProvider} 	    messageParser={MessageParser} />
+      
+      <Chatbot  
+        style={{ width: '100000', height: '1000vh' }} 
+        config={config} 
+        actionProvider={ActionProvider} 	    
+        messageParser={MessageParser} 
+      />
 
     </div>
       
