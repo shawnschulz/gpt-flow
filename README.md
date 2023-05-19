@@ -10,5 +10,5 @@ TODOs
 6. Add option to run local models
 ~~7. Add text output chat screen~~
 8. Add regular chatbot functionality to text output screen
-
+9. Incorporate hf agents 
 
