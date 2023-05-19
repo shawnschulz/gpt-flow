@@ -58,9 +58,4 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
   );
 }
 
-//        <button  className="remove-node-button" onClick={handleRemove}></button>
-
-      //<EdiText type="text" value={value} onSave={handleSave} />
-      //<EdiText type="text" value={prompt_value} onSave={handleSave} />
-
 export default TextInputNode;
