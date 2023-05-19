@@ -73,9 +73,22 @@ function Flow() {
  const onRestore = (selectedFile) =>{
   //this function uses the set functions to restore flow from an uploaded file, 
   //TODO: put setEdges in store.ts as well, i'm still using the one defined here for no reason.
-  const flow = JSON.parse(selectedFile);
-  setNodes(flow["nodes"] || []);
-  setEdges(flow["edges"] || []);
+  if (selectedFile){
+    const flow = JSON.parse(selectedFile);
+    setNodes(flow["nodes"] || []);
+    setEdges(flow["edges"] || []);
+  } else {
+    setNodes([
+      {
+        id: '00001',
+        type: 'textInput',
+        data: { label: '[Insert a prompt here]' },
+        position: { x: 0, y: 0 },
+      },
+    ]);
+    setEdges(initialEdges);
+  }
+  
  }
 
 /////
