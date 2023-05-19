@@ -1,10 +1,5 @@
-import { useCallback } from 'react';
-import React, { useState } from 'react';
-
+import React from 'react';
 import { NodeProps, Handle, Position } from 'reactflow';
-import { useEffect } from 'react';
-import ReactFlow, { useNodesState, useEdgesState } from 'reactflow';
-import { OnNodesChange } from 'reactflow';
 import useStore from '../store';
 
 
@@ -25,22 +20,16 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
         height: '20px',
       }}/>
       
-
       <div>
+        {`${id}`}
+        <textarea
+          className='nodrag'
+          value={data.label}
 
- 
-                    
-
-      {`${id}`}
-      <textarea
-        className='nodrag'
-        value={data.label}
-
-        onChange={(evt) => updateNodeLabel(id, evt.target.value)}
-      /> 
-
-      
+          onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+        /> 
       </div>
+
       <Handle type="source" position={Position.Right} id="right" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
@@ -48,6 +37,7 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
         width: '20px',
         height: '20px',
       }}/>
+
       <Handle type="target" position={Position.Top} id="top" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
@@ -55,6 +45,7 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
         width: '20px',
         height: '20px',
       }}/>
+
       <Handle type="source" position={Position.Bottom} id="bottom" style={{ // Make the handle invisible and increase the touch area
         background: 'transparent',
         zIndex: 999,
@@ -62,7 +53,6 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
         width: '20px',
         height: '20px',
       }}/>
-
     </div>
     
   );

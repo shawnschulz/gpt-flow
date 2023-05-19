@@ -1,21 +1,15 @@
 import React, { useCallback } from 'react';
-import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ReactFlow, {
-  MiniMap,
   Controls,
   Background,
-  useNodesState,
   useEdgesState,
-  addEdge,
-  EdgeText
+  addEdge
 } from 'reactflow';
-import { Handle, Position } from 'reactflow';
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
 import Chatbot from 'react-chatbot-kit'
-import {useEffect} from 'react';
 import './TextInputNodeStyle.css';
 
 import { shallow } from 'zustand/shallow';
@@ -27,7 +21,6 @@ import MessageParser from './bot/MessageParser';
 import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
-//import './updateNode.css';
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -35,73 +28,63 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   addChildNode: state.addChildNode,
-  setNodes: state.setNodes
+  setNodes: state.setNodes,
+  getNodes: state.getNodes
 });
 
 const rfStyle = {
   backgroundColor: '#faf5ff',
 };
 
-const exportToJson = (dictionary) => {
-  //This just turns dictionary style objects itno a json and then downloads it
-  const fileData = JSON.stringify(dictionary);
-  const blob = new Blob([fileData], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "nodes_edges_data.json";
-  link.click();
-};
-
-//Couldn't figure out how to get this to work so copied my custom node in
-
-
-//
-
-
 const nodeTypes = { textInput: TextInputNode };
 
-
+//edges stuff should probably be moved to store.ts later
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
-
-
-
 function Flow() {
-  const { nodes, onNodesChange, setNodes, addChildNode } = useStore(selector, shallow);
+  const { nodes, onNodesChange, setNodes, getNodes, addChildNode } = useStore(selector, shallow);
+  
+  //is this necessary anymore?
   const store = useStoreApi();
 
- // const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   
-  //Buttons
+////Buttons////
   function downloadJsonButton(dictionary) { 
-    
-    exportToJson(dictionary)
+      //This just turns dictionary style objects itno a json and then downloads it
+    const fileData = JSON.stringify(dictionary);
+    const blob = new Blob([fileData], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "nodes_edges_data.json";
+    link.click();
   }
 
   function runFlowButton(data) {
-    alert(JSON.stringify(nodes));
+    //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
+    //or just do what the download button does idk
+    alert(JSON.stringify(getNodes()));
 
   }
-
-  
-
-//  const data = {
-//    nodes: nodes,
- //   edges: edges,
- // };
-
+ 
  const onRestore = (selectedFile) =>{
+  //this function uses the set functions to restore flow from an uploaded file, 
+  //TODO: put setEdges in store.ts as well, i'm still using the one defined here for no reason.
   const flow = JSON.parse(selectedFile);
   setNodes(flow["nodes"] || []);
   setEdges(flow["edges"] || []);
  }
 
+/////
+
   const [selectedFile, setSelectedFile] = useState();
+
   const handleFileVariable = (e) => {
+    //gets the file from the upload button and turns it to a string, which then gets parsed into JSON
+    //I'm not actually sure why JSON.stringify or JSON.parse didn't work to start, but this makes it work now
       const fileReader = new FileReader();
       fileReader.readAsText(e.target.files[0], "UTF-8");
       fileReader.onload = e => {
@@ -130,7 +113,7 @@ function Flow() {
           </div>
 
           <div>
-            <button onClick={function(event){ {onNodesChange}; () => runFlowButton({nodes: nodes, edges: edges})} }>Run flow</button>
+            <button onClick={runFlowButton}>Run flow</button>
           </div>
 
       
