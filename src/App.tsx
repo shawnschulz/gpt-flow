@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import 'reactflow/dist/style.css';
 import ReactFlow, {
   Controls,
@@ -59,7 +59,7 @@ function Flow() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "nodes_edges_data.json";
+    link.download = "gpt_flow_schema.json";
     link.click();
   }
 
@@ -93,6 +93,43 @@ function Flow() {
 
 /////
 
+  //stuff for copy pasting nodes
+
+
+  // const [ctrlState, setCtrlState] = useState('');
+
+  //   useEffect(() => {
+  //     const handleKeyDown = (event) => {
+  //       event.preventDefault();
+  //       const code = event.which || event.keyCode;
+
+  //       let charCode = String.fromCharCode(code).toLowerCase();
+  //       if ((event.shiftKey || event.metaKey) && charCode === 's') {
+  //         setCtrlState('CTRL+S');
+  //      //   downloadJsonButton({nodes: nodes, edges: edges});
+  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'c') {
+  //      //   setCtrlState('SHIFT+C');
+          
+  //         for (var i =0; i < edges.length; i++){
+  //           alert(JSON.stringify(edges[i]))
+  //           if (edges[i]['selected']){
+  //             alert("node is selected")
+  //           }
+  //         }
+  //       //  alert('SHIFT C')
+  //         const selectedElements = useStoreState((store) => store.selectedElements);
+
+  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'v') {
+  //         setCtrlState('SHIFT+V');
+  //      //   alert('SHIFT+V Pressed');
+  //       }
+  //     };
+
+  //     window.addEventListener('keydown', handleKeyDown);
+
+  //     return () => window.removeEventListener('keydown', handleKeyDown);
+  //   }, []);
+  //
   const [selectedFile, setSelectedFile] = useState();
 
   const handleFileVariable = (e) => {
