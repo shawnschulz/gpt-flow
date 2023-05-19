@@ -1,3 +1,15 @@
+.labels{
+  color: black;
+  position: absolute;
+
+  background: #ffffff;
+  transition: 300ms;
+  transform: translate(-0%, -120%);
+  width: 100px;
+  border:none;
+  box-sizing:border-box
+}
+
 .text-updater-node {
   height: 50px;
   border: 1px solid #eee;

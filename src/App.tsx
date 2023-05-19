@@ -39,7 +39,7 @@ const rfStyle = {
 const nodeTypes = { textInput: TextInputNode };
 
 //edges stuff should probably be moved to store.ts later
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+const initialEdges = [];
 
 function Flow() {
   const { nodes, onNodesChange, setNodes, getNodes, addChildNode } = useStore(selector, shallow);
