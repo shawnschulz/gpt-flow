@@ -4,7 +4,7 @@ import useStore from '../store';
 import {useState, useEffect} from 'react'
 
 export type NodeData = {
-  label: string;
+  prompt: string;
 };
 
 function TextInputNode({ id, data }: NodeProps<NodeData>) {
@@ -49,7 +49,7 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
           onChange={e => setInputValue(e.target.value)}
         /><textarea
           className='nodrag'
-          value={data.label}
+          value={data.prompt}
 
           onChange={(evt) => updateNodeLabel(id, evt.target.value)}
         /> 

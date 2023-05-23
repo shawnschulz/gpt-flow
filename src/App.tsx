@@ -82,7 +82,7 @@ function Flow() {
       {
         id: '00001',
         type: 'textInput',
-        data: { label: '[Insert a prompt here]' },
+        data: { prompt: '[Insert a prompt here]' },
         position: { x: 0, y: 0 },
       },
     ]);

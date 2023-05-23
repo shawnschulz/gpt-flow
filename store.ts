@@ -16,7 +16,7 @@ import {
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     addChildNode: () => void;
-    updateNodeLabel: (nodeId: string, label: string) => void;
+    updateNodeLabel: (nodeId: string, prompt: string) => void;
     setNodes: (nodes) => void;
     getNodes: () => void;
   };
@@ -26,7 +26,7 @@ import {
       {
         id: '00001',
         type: 'textInput',
-        data: { label: '[Insert a prompt here]' },
+        data: { prompt: '[Insert a prompt here]' },
         position: { x: 0, y: 0 },
       },
     ],
@@ -56,7 +56,7 @@ import {
       const newNode = {
         id: getNodeId(),
         type: 'textInput',
-        data: { label: '[Insert a prompt here]' },
+        data: { prompt: '[Insert a prompt here]' },
         position: {
             x: 0,
             y: 0
@@ -66,12 +66,12 @@ import {
         nodes: [...get().nodes, newNode],
       });
     },
-    updateNodeLabel: (nodeId: string, label: string) => {
+    updateNodeLabel: (nodeId: string, prompt: string) => {
         set({
           nodes: get().nodes.map((node) => {
             if (node.id === nodeId) {
               // it's important to create a new object here, to inform React Flow about the changes
-              node.data = { ...node.data, label };
+              node.data = { ...node.data, prompt };
             }
       
             return node;
