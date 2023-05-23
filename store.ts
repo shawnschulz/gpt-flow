@@ -18,6 +18,7 @@ import {
     addChildNode: () => void;
     updateNodeLabel: (nodeId: string, prompt: string) => void;
     setNodes: (nodes) => void;
+    setEdges: (edges) => void;
     getNodes: () => void;
   };
   
@@ -45,6 +46,11 @@ import {
         set({
             nodes: newNodes,
           });
+    },
+    setEdges: (newEdges) => {
+      set({
+        edges:newEdges,
+      });
     },
     getNodes: () => {
         const gotNodes = get().nodes
