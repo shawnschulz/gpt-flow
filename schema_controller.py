@@ -111,8 +111,8 @@ def updateNodePrompts(node_prompt_dictionary, schema_dictionary):
     for node in new_dictionary['nodes']:
         if node['id'] in node_prompt_dictionary.keys():
             old_prompt = node['data']['prompt'] 
-            new_prompt = node_prompt_dictionary[node['id']]
-            node['data']['input'] = new_prompt
+            new_prompt = node_prompt_dictionary[node['id']] + ' \n' + old_prompt
+            node['data']['prompt'] = new_prompt
     return(new_dictionary)
     
             
@@ -153,7 +153,15 @@ def removeEdgeIDs(id_list, schema_dictionary):
 #what node they want to start with, but i am too lazy to think of what the UX of that would be 
 
 # %%
-def runLLM(node_id, schema_dictionary):
+def runTextLLM(text):
+    '''
+        much simpler function that only runs LLM using text, not based on node
+    '''
+    #for testing just return a string
+    print("Running LLM based on text")
+    return "this is a test string"
+
+def runNodeLLM(node_id, schema_dictionary):
     '''
         put a funciton that runs the LLM here
     '''
@@ -187,8 +195,13 @@ def listenForInput():
     print("Running listenForInput")
     return("Placeholder for listening to server!")
 
+def retrieveNodePrompt(node_id, schema_dictionary):
+    for node in schema_dictionary['nodes']:
+        if node['id'] == node_id:
+            return(node['data']['prompt'])
+
 # %%
-def runSchema(schema_dictionary, next_node_in_loop = "start"):
+def runSchema(schema_dictionary, next_node_in_loop = "start", received_input=""):
     '''
         Take a schema and run the flow. Mutates schema dictionary and removes edges not part of a loop, edges within or downstream of loops are
         preserved.
@@ -246,15 +259,20 @@ def runSchema(schema_dictionary, next_node_in_loop = "start"):
                         print("Node just checked is terminal branch, skipping to find start node!")
             else:
                 current_node = next_node_in_loop
-            output = runLLM(current_node, schema_dictionary)
+            
+            ### In the future, you may want to change the way this script combines received inputs
+            # with the prompt a node has typed into it
+            node_prompt = received_input + retrieveNodePrompt(current_node, schema_dictionary)
+            print("the node prompt is: " + node_prompt)
+            output = runTextLLM(node_prompt)
+            next_received_input = output + " "
             outputToChatbot(output)
             for edge in next_schema_dictionary['edges']:
                 if edge['source'] == current_node:
                     edge_id = edge['id']
                     nodes_to_send_outputs[edge['target']] = output
-                    print(nodes_to_send_outputs)
             for node_id in nodes_to_send_outputs:
-                runSchema(schema_dictionary, next_node_in_loop=node_id)
+                runSchema(schema_dictionary, next_node_in_loop=node_id, received_input=next_received_input)
 
     else:                    
         #Recursive case: Schema dictionary has roots. Get the outputs from the source node, make 
@@ -274,12 +292,15 @@ def runSchema(schema_dictionary, next_node_in_loop = "start"):
                     print(nodes_to_send_outputs)
                     print("Printing the edges to be removed")
                     print(edge_ids_to_remove)
-            output = runLLM(root, next_schema_dictionary)
+            output = runNodeLLM(root, next_schema_dictionary)
             ### SEND OUTPUT TO CHATBOT TO OUTPUT HERE ####
             outputToChatbot(output)
 
             for node_id in nodes_to_send_outputs.keys():
                 nodes_to_send_outputs[node_id] = output
+            
+            ### In the future you may want to change the way this script handles combining 
+            ### prompts
             updated_prompts_dict = updateNodePrompts(nodes_to_send_outputs, schema_dictionary)
             next_schema_dictionary=removeEdgeIDs(edge_ids_to_remove, updated_prompts_dict)
         return(runSchema(next_schema_dictionary))
