@@ -10,7 +10,7 @@ import sys
 #only thing left to do is receive this json file as an input from the server and make sure
 #running the LLM works :), will eventually want to add some other options for LLMs to run
 #and also listen for that input.
-json_path="/Users/shawnschulz/Downloads/challenge2.json"
+json_path="/home/bankerz/Downloads/challenge.json"
 
 with open(json_path) as json_file:
     schema_dictionary = json.load(json_file)
@@ -78,11 +78,14 @@ def checkBranch(node_id, schema_dictionary):
                 else:
                     return True
 def checkIsTerminalBranchNode(node_id, schema_dictionary):
+    final_value = False
     for edge in schema_dictionary['edges']:
-        if edge['source'] == node_id:
-            return False
-        else:
-            return True
+        print('edge source is: ' + edge['source'])
+        if edge['source'] == node_id and edge['id'] == node_id:
+            final_value = False
+        elif edge['source'] != node_id and edge['id'] == node_id:
+            final_value = True
+    return final_value
 
 def checkLoop(node_id, schema_dictionary, truth_list = [], seen=[]):
     '''
@@ -278,6 +281,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
                 if edge['source'] == current_node:
                     edge_id = edge['id']
                     nodes_to_send_outputs[edge['target']] = output
+                    print("next nodes are:")
                     print(nodes_to_send_outputs)
             next_loops= []
             next_terminal = []
@@ -285,7 +289,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
                 #i dont understand why this isn't working
                 print("THE NODE ID IS")
                 print(node_id)
-                print("check loop value is:")
+                print("check loop is:")
                 print(checkLoop(node_id, schema_dictionary))
                 breakpoint()
 
@@ -298,6 +302,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
                     print("In next terminal")
             for terminal_id in next_terminal:
                 print("in terminal")
+                print("terminal id is: " + terminal_id)
                 runSchema(schema_dictionary, next_node_in_loop=terminal_id, received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
             if len(next_loops) == 1:
                 print('detected len as 1')
