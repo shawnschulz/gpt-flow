@@ -10,7 +10,7 @@ import sys
 #only thing left to do is receive this json file as an input from the server and make sure
 #running the LLM works :), will eventually want to add some other options for LLMs to run
 #and also listen for that input.
-json_path="/Users/shawnschulz/Downloads/loop_test2.json"
+json_path="/Users/shawnschulz/Downloads/challenge2.json"
 
 with open(json_path) as json_file:
     schema_dictionary = json.load(json_file)
@@ -77,7 +77,13 @@ def checkBranch(node_id, schema_dictionary):
                     return False
                 else:
                     return True
-                
+def checkIsTerminalBranchNode(node_id, schema_dictionary):
+    for edge in schema_dictionary['edges']:
+        if edge['source'] == node_id:
+            return False
+        else:
+            return True
+
 def checkLoop(node_id, schema_dictionary, truth_list = [], seen=[]):
     '''
         Recursively checks if following a node's targets only results in a terminal branch,
@@ -201,7 +207,7 @@ def retrieveNodePrompt(node_id, schema_dictionary):
             return(node['data']['prompt'])
 
 # %%
-def runSchema(schema_dictionary, next_node_in_loop = "start", received_input=""):
+def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="", diverging_loop_stack=[]):
     '''
         Take a schema and run the flow. Mutates schema dictionary and removes edges not part of a loop, edges within or downstream of loops are
         preserved.
@@ -254,6 +260,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="")
                 for node in schema_dictionary['nodes']:
                     if checkLoop(node['id'], schema_dictionary):
                         current_node = node['id']
+                        print(current_node)
                         break
                     else:
                         print("Node just checked is terminal branch, skipping to find start node!")
@@ -271,8 +278,46 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="")
                 if edge['source'] == current_node:
                     edge_id = edge['id']
                     nodes_to_send_outputs[edge['target']] = output
+                    print(nodes_to_send_outputs)
+            next_loops= []
+            next_terminal = []
             for node_id in nodes_to_send_outputs:
-                runSchema(schema_dictionary, next_node_in_loop=node_id, received_input=next_received_input)
+                #i dont understand why this isn't working
+                print("THE NODE ID IS")
+                print(node_id)
+                print("check loop value is:")
+                print(checkLoop(node_id, schema_dictionary))
+                breakpoint()
+
+                if checkLoop(node_id, schema_dictionary):
+                    next_loops.append(node_id)
+                    print("In next loop")
+                    print(next_loops)
+                if checkIsTerminalBranchNode(node_id, schema_dictionary):
+                    next_terminal.append(node_id)
+                    print("In next terminal")
+            for terminal_id in next_terminal:
+                print("in terminal")
+                runSchema(schema_dictionary, next_node_in_loop=terminal_id, received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
+            if len(next_loops) == 1:
+                print('detected len as 1')
+                runSchema(schema_dictionary, next_node_in_loop=next_loops[0], received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
+            elif len(next_loops) > 1:
+                #want to make sure we run different diverging loops in order 
+                if len(diverging_loop_stack) == 0:
+                    #if this is the first time seeing the diverging loop, make our queued loops the diverging
+                    #loop stack
+                    runSchema(schema_dictionary, next_node_in_loop=next_loops[0], received_input=next_received_input, diverging_loop_stack=next_loops)
+                elif len(diverging_loop_stack) > 0:
+                    if set(next_loops) != set(diverging_loop_stack):
+                        diverging_loop_stack = next_loops
+                        runSchema(schema_dictionary, next_node_in_loop=diverging_loop_stack[0], received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
+                    elif set(next_loops) == set(diverging_loop_stack):
+                        first = diverging_loop_stack.pop(0)
+                        diverging_loop_stack.append(first)
+                        print("THISIS THE NEW STACK")
+                        print(diverging_loop_stack)
+                        runSchema(schema_dictionary, next_node_in_loop=diverging_loop_stack[0], received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
 
     else:                    
         #Recursive case: Schema dictionary has roots. Get the outputs from the source node, make 
@@ -307,8 +352,3 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="")
 
 # %%
 runSchema(schema_dictionary)
-
-# %%
-
-
-
