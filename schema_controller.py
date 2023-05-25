@@ -5,16 +5,25 @@ from optparse import OptionParser
 import os
 import json
 import sys
-
+from llama_cpp import Llama
 # %%
 #only thing left to do is receive this json file as an input from the server and make sure
 #running the LLM works :), will eventually want to add some other options for LLMs to run
 #and also listen for that input.
-json_path="/home/bankerz/Downloads/challenge.json"
+json_path="/home/shawn/Downloads/lotr.json"
 
 with open(json_path) as json_file:
     schema_dictionary = json.load(json_file)
 
+def ask_lora(prompt):
+    path_to_model= "/home/shawn/Programming/ai_stuff/llama.cpp/models/30B/ggml-model-q4_0.bin" 
+    llm = Llama(model_path=path_to_model)
+    output = llm("Instruction: " + prompt + "\n Output: ", stop=['Instruction'],max_tokens=200, echo=True)
+    response = output["choices"][0]["text"]
+    #save the model again (this could either be extremely important or useless idk lol)
+    #f2 = open(memory_dir + 'dataset.json', 'r+b')
+    #f2.write(bytes(str(output), 'utf-8'))
+    return(response)
 # %%
 ### Should probably update this to use a python class, so that when we add new node types
 ### we can reuse some methods without having to minor edits to make them compatible with
@@ -168,24 +177,22 @@ def runTextLLM(text):
     '''
     #for testing just return a string
     print("Running LLM based on text")
-    return "this is a test string"
+    return ask_lora(text)
 
 def runNodeLLM(node_id, schema_dictionary):
     '''
         put a funciton that runs the LLM here
     '''
     #for testing just return a string to check that schema's working
-    print("Running LLM")
-    return "this is a test string"
-
+    prompt=''
     for node in schema_dictionary['nodes']:
         if node['id'] == node_id:
-            prompt = ''
+            prompt=''
             for key in node['data'].keys():
                 prompt += node['data'][key]
                 prompt += " \n"
             # run LLM on prompt, note that this output will need to be sent over web somehow
-    return prompt
+    return ask_lora(prompt)
 
 # %%
 def outputToChatbot(output):
