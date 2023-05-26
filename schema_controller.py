@@ -18,11 +18,14 @@ with open(json_path) as json_file:
 def ask_lora(prompt):
     path_to_model= "/home/shawn/Programming/ai_stuff/llama.cpp/models/30B/ggml-model-q4_0.bin" 
     llm = Llama(model_path=path_to_model)
-    output = llm("Instruction: " + prompt + "\n Output: ", stop=['Instruction'],max_tokens=200, echo=True)
-    response = output["choices"][0]["text"]
+    output = llm("Instruction: " + prompt + "Output: ", stop=['Instruction'], max_tokens=200, echo=True)
+    print("DEBUG: the output of ask-lora before subsetting is:")
+    print(output)
+    response = output["choices"][0]["text"].split("Output: ",1)[1]
     #save the model again (this could either be extremely important or useless idk lol)
     #f2 = open(memory_dir + 'dataset.json', 'r+b')
     #f2.write(bytes(str(output), 'utf-8'))
+    print(response)
     return(response)
 # %%
 ### Should probably update this to use a python class, so that when we add new node types
@@ -74,6 +77,19 @@ def findRoots(schema_dictionary):
             print("removing from stack")
             stack.remove(edge['target'])
     return stack
+
+def findOrphanedNodes(schema_dictionary):
+    '''
+        finds nodes without edges, please track nodes that have already been run that are orphaned
+    '''
+    stack = []
+    for node in schema_dictionary['nodes']:
+        stack.append(node['id'])
+        for edge in schema_dictionary['edges']:
+            if edge['source'] == node['id'] or edge['target'] == node['id']:
+                stack.remove(node['id'])
+                break
+    return(stack)
 
 def checkBranch(node_id, schema_dictionary):
     '''
@@ -170,18 +186,40 @@ def removeEdgeIDs(id_list, schema_dictionary):
 #to start with, I think we should always start from the first node created. May make sense in the future to allow user to specify
 #what node they want to start with, but i am too lazy to think of what the UX of that would be 
 
+def enforceDictUniqueID(id, dictionary):
+    '''
+        takes a dictionary and an id, returns the id if the id does not appear in the keys of hte dictionary, a new id with
+        a tail end number if it does
+    '''
+    if id in dictionary.keys():
+        if id[-1].isnumeric():
+            new_id = id[0:-1] + str(int(id[-1]))
+            return(new_id)
+        else:  
+            new_id = id + "_1"
+            return(new_id)
+    return(id)
 # %%
-def runTextLLM(text):
+def runTextLLM(text, node_id = "unknown", context_dict = {}, context_fp = './context.json'):
     '''
         much simpler function that only runs LLM using text, not based on node
+        outputs context json to context_fp, should figure out a good place for this in
+        webserver file structure later
     '''
     #for testing just return a string
     print("Running LLM based on text")
-    return ask_lora(text)
+    output= ask_lora(text)
+    node_id_to_add = enforceDictUniqueID(node_id, context_dict)
+    context_dict[node_id_to_add] = output
+    with open(context_fp, "w") as outfile:
+        json.dump(context_dict, outfile)
+    return output, context_dict
 
-def runNodeLLM(node_id, schema_dictionary):
+def runNodeLLM(node_id, schema_dictionary, context_dict={}, context_fp = './context.json'):
     '''
-        put a funciton that runs the LLM here
+        function that runs the node based on node_id, 
+        outputs context json to context_fp, should figure out a good place for this in
+        webserver file structure later
     '''
     #for testing just return a string to check that schema's working
     prompt=''
@@ -192,7 +230,12 @@ def runNodeLLM(node_id, schema_dictionary):
                 prompt += node['data'][key]
                 prompt += " \n"
             # run LLM on prompt, note that this output will need to be sent over web somehow
-    return ask_lora(prompt)
+    output = ask_lora(prompt)
+    node_id_to_add = enforceDictUniqueID(node_id, context_dict)
+    context_dict[node_id_to_add] = output
+    with open(context_fp, "w") as outfile:
+        json.dump(context_dict, outfile)
+    return output, context_dict
 
 # %%
 def outputToChatbot(output):
@@ -217,7 +260,7 @@ def retrieveNodePrompt(node_id, schema_dictionary):
             return(node['data']['prompt'])
 
 # %%
-def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="", diverging_loop_stack=[]):
+def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="", diverging_loop_stack=[], seen_nodes=[], context_dict = {}):
     '''
         Take a schema and run the flow. Mutates schema dictionary and removes edges not part of a loop, edges within or downstream of loops are
         preserved.
@@ -254,9 +297,14 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
     roots = findRoots(schema_dictionary)
     nodes_to_send_outputs={}
     next_schema_dictionary=schema_dictionary.copy()
-
+    orphaned_nodes=list(set(findOrphanedNodes(schema_dictionary)).difference(set(seen_nodes)))
+    print("Printing the orphaned nodes")
+    print(orphaned_nodes)
     #Base case: Check if schema dictionary has no roots
-    if len(roots) == 0:
+    if len(roots) == 0 and len(orphaned_nodes) == 0 and len(schema_dictionary['edges']) == 0:
+        print("No roots, orphaned nodes or edges. Exiting.")
+        return(schema_dictionary) 
+    if len(roots) == 0 and len(orphaned_nodes) == 0:
         print("We are doing the loop case.")
         print("Here's the node we're doing:")
         print(next_node_in_loop)
@@ -281,7 +329,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
             # with the prompt a node has typed into it
             node_prompt = received_input + retrieveNodePrompt(current_node, schema_dictionary)
             print("the node prompt is: " + node_prompt)
-            output = runTextLLM(node_prompt)
+            output, context_dict = runTextLLM(node_prompt, context_dict)
             next_received_input = output + " "
             outputToChatbot(output)
             for edge in next_schema_dictionary['edges']:
@@ -329,7 +377,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
                         diverging_loop_stack.append(first)
                         print("THISIS THE NEW STACK")
                         print(diverging_loop_stack)
-                        runSchema(schema_dictionary, next_node_in_loop=diverging_loop_stack[0], received_input=next_received_input, diverging_loop_stack=diverging_loop_stack)
+                        runSchema(schema_dictionary, next_node_in_loop=diverging_loop_stack[0], received_input=next_received_input, diverging_loop_stack=diverging_loop_stack, context_dict=context_dict)
 
     else:                    
         #Recursive case: Schema dictionary has roots. Get the outputs from the source node, make 
@@ -339,6 +387,8 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
         edge_ids_to_remove=[]
         
         next_schema_dictionary=schema_dictionary.copy()
+        roots = roots + orphaned_nodes
+        new_seen_nodes=seen_nodes
         for root in roots:
             for edge in next_schema_dictionary['edges']:
                 if edge['source'] == root:
@@ -349,7 +399,10 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
                     print(nodes_to_send_outputs)
                     print("Printing the edges to be removed")
                     print(edge_ids_to_remove)
-            output = runNodeLLM(root, next_schema_dictionary)
+                    print("printing the new seen nodes")
+                    print(new_seen_nodes)
+            output, context_dict = runNodeLLM(root, next_schema_dictionary, context_dict=context_dict)
+            new_seen_nodes.append(root)
             ### SEND OUTPUT TO CHATBOT TO OUTPUT HERE ####
             outputToChatbot(output)
 
@@ -360,7 +413,7 @@ def runSchema(schema_dictionary, next_node_in_loop = "start", received_input="",
             ### prompts
             updated_prompts_dict = updateNodePrompts(nodes_to_send_outputs, schema_dictionary)
             next_schema_dictionary=removeEdgeIDs(edge_ids_to_remove, updated_prompts_dict)
-        return(runSchema(next_schema_dictionary))
+        return(runSchema(next_schema_dictionary, seen_nodes=new_seen_nodes, context_dict=context_dict))
 
 # %%
 runSchema(schema_dictionary)
