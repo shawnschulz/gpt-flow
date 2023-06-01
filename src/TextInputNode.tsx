@@ -42,7 +42,7 @@ function TextInputNode({ id, data }: NodeProps<NodeData>) {
         height: '20px',
       }}/>
       
-      <div style={{width:'200px',height:'200px',border:'none', color:'black'}}>
+      <div style={{width:'200px',height:'10px',border:'none', color:'black'}}>
 
         <input className='labels'
           value={inputValue}
