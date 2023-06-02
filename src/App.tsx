@@ -148,7 +148,7 @@ function Flow() {
   
       <div className="otherComponents">
 
-        <div style={{ width: '79vw', height: '96vh' }}>
+        <div style={{ width: '75vw', height: '96vh' }}>
           
           <div style={{float: 'right'}}>
             <button onClick={() => downloadJsonButton({nodes: nodes, edges: edges})}>Download Flow as Json</button>
@@ -187,10 +187,9 @@ function Flow() {
     </div>
 
 
-    <div className="myComponent" style={{ width: '100', height: '100vh' }}>
+    <div className="myComponent">
       
       <Chatbot  
-        style={{ width: '100000', height: '1000vh' }} 
         config={config} 
         actionProvider={ActionProvider} 	    
         messageParser={MessageParser} 
