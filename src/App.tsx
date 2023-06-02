@@ -21,6 +21,7 @@ import MessageParser from './bot/MessageParser';
 import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
+import axios from 'axios'
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -62,11 +63,28 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
-
+  const [getMessage, setGetMessage] = useState({})
   function runFlowButton(data) {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
-    alert(JSON.stringify(getNodes()));
+    
+    axios.get('http://127.0.0.1:5000/flask/prompts').then(response => {
+          console.log("SUCCESS", response)
+          setGetMessage(response)
+        }).catch(error =>{
+          console.log(error)
+        })
+    let schema = {nodes: getNodes(), edges: edges};
+    axios.post('http://127.0.0.1:5000/flask/prompts', schema)
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    // need to call backend API somehow to send the schema to python script
+    alert(JSON.stringify(schema));
+    
 
   }
  
@@ -143,6 +161,20 @@ function Flow() {
       };      
      };
 
+  // API calls for communication with backend
+
+
+  const testBackend = () => {
+    axios.get('http://127.0.0.1:5000/flask/hello').then(response => {
+          console.log("SUCCESS", response)
+          setGetMessage(response)
+        }).catch(error =>{
+          console.log(error)
+        })
+  }
+
+  // end of code blocks for API calls
+  
   return (
     <div className="container">
   
