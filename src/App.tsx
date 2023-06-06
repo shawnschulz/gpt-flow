@@ -68,14 +68,9 @@ function Flow() {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    axios.get('http://127.0.0.1:5000/flask/prompts').then(response => {
-          console.log("SUCCESS", response)
-          setGetMessage(response)
-        }).catch(error =>{
-          console.log(error)
-        })
-    let schema = {nodes: getNodes(), edges: edges};
-    axios.post('http://127.0.0.1:5000/flask/prompts', schema)
+    
+    var schema = {nodes: getNodes(), edges: edges};
+    axios.post('http://127.0.0.1:4269/json', schema)
     .then(function (response) {
       console.log(response);
     })
@@ -83,8 +78,6 @@ function Flow() {
       console.log(error);
     });
     // need to call backend API somehow to send the schema to python script
-    alert(JSON.stringify(schema));
-    
 
   }
  
