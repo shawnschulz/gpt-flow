@@ -1,5 +1,7 @@
 # autogpt-flow
 
+WIP! Here's how you can test the app locally:
+
 clone the repo:
 ```
 git clone https://github.com/shawnschulz/gpt-flow.git
