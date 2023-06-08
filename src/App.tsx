@@ -9,7 +9,7 @@ import ReactFlow, {
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
-import Chatbot from 'react-chatbot-kit'
+import Chatbot, { createChatBotMessage } from 'react-chatbot-kit'
 import './TextInputNodeStyle.css';
 
 import { shallow } from 'zustand/shallow';
@@ -68,9 +68,9 @@ function Flow() {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    
+    createChatBotMessage("***Running Flow***");
     var schema = {nodes: getNodes(), edges: edges};
-    axios.post('http://127.0.0.1:4269/json', schema)
+    axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
     .then(function (response) {
       console.log(response);
     })
