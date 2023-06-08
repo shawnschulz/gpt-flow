@@ -1,5 +1,28 @@
 # autogpt-flow
 
+clone the repo:
+```
+git clone https://github.com/shawnschulz/gpt-flow.git
+```
+enter folder and install npm packages:
+```
+cd gpt-flow
+npm install
+```
+
+run development server:
+```
+npm run dev
+```
+
+be sure to also get the flask backend up and running to test api calls:
+```
+git clone https://github.com/shawnschulz/gpt-flow-backend.git
+cd gpt-flow-backend
+pip -r install requirements.txt
+python app.py 
+```
+
 TODOs
 
 ~~1. Add ability to add new nodes~~
