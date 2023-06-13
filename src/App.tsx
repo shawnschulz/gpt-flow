@@ -124,7 +124,18 @@ function Flow() {
 
     function findRoots(schemaDict){
       // Finds the roots of the schema
-
+      let stack = []
+      for(let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
+        if (schemaDict['edges'][edge_i] ! in stack){
+            schemaDict['edges'].push(schemaDict['edges'][edge_i]['source'])
+        }
+      }
+      for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
+        if (schemaDict['edges'][edge_i]['target'] in stack){
+          console.log("Removing edge from stack")
+          sta
+        }
+      }
     }
     
     function findOrphanedNodes(schemaDict){
