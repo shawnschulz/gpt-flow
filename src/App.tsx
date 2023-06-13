@@ -133,7 +133,7 @@ function Flow() {
       for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
         if (schemaDict['edges'][edge_i]['target'] in stack){
           console.log("Removing edge from stack")
-          sta
+
         }
       }
     }
