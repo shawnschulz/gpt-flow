@@ -111,8 +111,7 @@ function Flow() {
 
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
-    ///Helper functions of runSchema
-
+    ///START OF Helper functions of runSchema
     function runAPILLM(text, ){
       // eventually want to make database so users can login and access
       // saved context from a JSON database, but to save time for now
@@ -174,6 +173,13 @@ function Flow() {
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
 
+    //Base case: Check if schema dictionary has no roots
+
+      //Special case: graph is a loop
+
+          //Special case: loops diverge
+    
+    //Recursive case: Schema dictionary has roots
  }
 ///END OF RUNSCHEMA FUNCTION
 
