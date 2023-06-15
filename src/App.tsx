@@ -121,13 +121,20 @@ function Flow() {
       //outputted to the chatbot messenger bot thingie somehow and also
       //stored into a context dictionary
     }
-
-    function findRoots(schemaDict){
+    function dictionaryify(nodeOrEdgeList){
+      // takes the schema and converts it from one where the nodes and edges
+      // are stored in a list of dictionaries and instead makes it a 
+      // dictionary, where each key is the id and the value is the dictionary
+      // with information 
+      // using this at the beginning should allow us to make much simpler
+      // code for our helper functions
+    }
+    function findRoots(schemaDict: {} ){
       // Finds the roots of the schema
-      let stack = []
-      for(let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
+      let stack : [] = []
+      for(let edge_i in schemaDict['edges']){
         if (schemaDict['edges'][edge_i] ! in stack){
-            schemaDict['edges'].push(schemaDict['edges'][edge_i]['source'])
+            stack.push(schemaDict['edges'][edge_i]['source'])
         }
       }
       for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
