@@ -105,15 +105,50 @@ import axios from 'axios'
     
     function checkBranch(nodeID, schemaDict){
       //check if a node ever results in a terminal branch
+      // i think we don't use this and use checkIsTerminal instead
+      if (Object.keys(schemaDict['edges']).length == 0) {
+        //there are no edges at all 
+        return false
+      }
+
+      for (let edgeKey in schemaDict['edges']){
+        
+        let edge = schemaDict['edges'][edgeKey]
+        
+        if (edge['source'] == nodeID ){
+          return false
+        }
+        else if (edge['target'] == nodeID) {
+          return true
+        }
+        else{
+          return false
+        }
+      }
     }
     
     function checkIsTerminalBranchNode(nodeID, schemaDict){
       //check if a node is the end of a branch
+      let final_value = false
+      let orphanedNodes = findOrphanedNodes(schemaDict)
+      for (let edgeKey in schemaDict['edges']){
+        let edge = schemaDict['edges'][edgeKey]
+        if (edge['source'] == nodeID || orphanedNodes.includes(nodeID)){
+          //if node is a source or is orphaned, it's not a terminal branch
+          final_value = false
+        }
+        else {
+          //i think it's true in all other cases?
+          final_value = true
+        }
+      }
+      return(final_value)
     }
     
-    function checkLoop(nodeID, schemaDict, truthList, seen){
+    function checkLoop(nodeID, schemaDict, truthList = [], seen){
       //Recursively checks if following a node's targets only results in a terminal branch, returns record of (bool, list)
       //bool is True if the graph is a loop
+
     }
     
     function updateNodePrompts(nodePromptDictionary, schemaDict){
@@ -142,7 +177,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(findOrphanedNodes(schemaDict))
+    return(checkIsTerminalBranchNode("00001", schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
