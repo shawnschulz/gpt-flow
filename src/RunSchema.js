@@ -84,6 +84,23 @@ import axios from 'axios'
     
     function findOrphanedNodes(schemaDict){
       //finds nodes without edges
+      let stack = [];
+      for (let nodeKey in schemaDict['nodes']){
+        let node = schemaDict['nodes'][nodeKey]
+        stack.push(node['id'])
+        console.log(stack)
+        for (let edgeKey in schemaDict['edges']){
+          let edge = schemaDict['edges'][edgeKey]
+          if (edge['source'] == node['id'] || edge['target'] == node['id']){
+            let index = stack.indexOf(node['id'])
+            if (index > -1){
+              stack.splice(index, 1)
+            }
+            break;
+          }
+        }
+      }
+      return(stack)
     }
     
     function checkBranch(nodeID, schemaDict){
@@ -125,7 +142,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(findRoots(schemaDict))
+    return(findOrphanedNodes(schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
