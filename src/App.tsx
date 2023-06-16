@@ -76,8 +76,7 @@ function Flow() {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    var schema = {nodes: getNodes(), edges: edges};
-    alert(JSON.stringify(runSchema(schema)))
+    alert(JSON.stringify(runSchema(data)))
     // need to call backend API somehow to send the schema to python script
 
   }
@@ -194,7 +193,7 @@ function Flow() {
           </div>
 
           <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onClick={runFlowButton}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
 
       

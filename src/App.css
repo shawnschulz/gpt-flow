@@ -9,26 +9,24 @@
 }
 
 .react-chatbot-kit-chat-inner-container {
-  background: #242424;
 
 }
 
 .react-chatbot-kit-chat-input-container {
   height: 10vh;
   width: 45vh;
-  background: #242424;
 
 }
 .react-chatbot-kit-chat-message-container {
 width: 40vh;
 height: 80vh;
-background: #242424;
 
 }
 
-.react-chatbot-kit-chat-header {
+.react-chatbot-kit-chat-header { 
+  color: white;
   background: #242424;
-  color: white
+  width: 40vh
 }
 
 .container {

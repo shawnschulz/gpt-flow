@@ -3,6 +3,7 @@ import axios from 'axios'
 ///START OF RUNSCHEMA FUNCTION
  function runSchema(listedSchemaDict) {
     console.log("inside runSchema")
+    console.log(listedSchemaDict)
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
     //Should do an api call to ask for LLM output when needed
     // I am way too lazy but this whole funciton really should be in
@@ -28,13 +29,11 @@ import axios from 'axios'
       });
     }
 
-    function schemaListToDictionaary(schemaList) {
+    function schemaListToDictionary(schemaList) {
       console.log("running schemaListToDictionary")
       let newDict={};
-      let copy={};
-      for (let dict_i in schemaList){
-          Object.assign(copy, schemaList[dict_i])
-          newDict[schemaList[dict_i]['id']] = copy
+      for (let dict_i = 0; dict_i < schemaList.length; dict_i++){
+          newDict[schemaList[dict_i]['id']] = schemaList[dict_i]
       }
       return newDict;
     }
@@ -48,8 +47,8 @@ import axios from 'axios'
       // code for our helper functions
       console.log("running dictionaryify")
       let newDict = {'nodes':{}, 'edges':{}}
-      let nodesDict = schemaListToDictionaary(schemaDict['nodes'])
-      let edgesDict = schemaListToDictionaary(schemaDict['edges'])
+      let nodesDict = schemaListToDictionary(schemaDict['nodes'])
+      let edgesDict = schemaListToDictionary(schemaDict['edges'])
       newDict['nodes'] = nodesDict
       newDict['edges'] = edgesDict
       console.log(newDict)
@@ -58,18 +57,29 @@ import axios from 'axios'
 
     function findRoots(schemaDict){
       // Finds the roots of the schema
-
-      // for(let edge_i in schemaDict['edges']){
-      //   if (schemaDict['edges'][edge_i] ! in stack){
-      //       stack.push(schemaDict['edges'][edge_i]['source'])
-      //   }
-      // }
-      // for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
-      //   if (schemaDict['edges'][edge_i]['target'] in stack){
-      //     console.log("Removing edge from stack")
-
-      //   }
-      // }
+      // note that our schemaDict is expected to have been converted to have
+      // ID lookupable nodes and edge nested dictionaries
+      let stack = [];
+      for (let edgeKey in schemaDict['edges']){
+        if (  !(stack.includes(schemaDict['edges'][edgeKey]['source'])) ){
+          
+          stack.push(schemaDict['edges'][edgeKey]['source'])
+          console.log(stack)
+        }
+      }
+      for (let edgeKey in schemaDict['edges']){
+        if (stack.includes(schemaDict['edges'][edgeKey]['target'])){
+          console.log("(DEBUG) findRoots: Removing edge from stack")
+          console.log(edgeKey)
+          let index = stack.indexOf((stack.includes(schemaDict['edges'][edgeKey]['target'])))
+          if (index > -1){
+            stack.splice(index, 1)
+          }
+          console.log("(DEBUG) findRoots: printing stack")
+          console.log(stack)
+        }
+      }
+      return(stack)
     }
     
     function findOrphanedNodes(schemaDict){
@@ -115,7 +125,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(schemaDict)
+    return(findRoots(schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
