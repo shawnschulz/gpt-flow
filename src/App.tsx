@@ -22,6 +22,14 @@ import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
 import axios from 'axios'
+import './RunSchema.js'
+import runSchema from './RunSchema.js';
+
+//Change this to use the api later
+import shblog_icon from "./shblog_icon.png"
+import run_icon from "./run_icon.png"
+import plus_icon from "./plus_icon.png"
+//
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -68,15 +76,8 @@ function Flow() {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    createChatBotMessage("***Running Flow***");
     var schema = {nodes: getNodes(), edges: edges};
-    axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    alert(JSON.stringify(runSchema(schema)))
     // need to call backend API somehow to send the schema to python script
 
   }
@@ -102,106 +103,6 @@ function Flow() {
   
  }
 
- ///START OF RUNSCHEMA FUNCTION
- function runSchema(schemaDict) {
-    //This will be a very large function that runs clientside, traversing graph with correct logic for loops
-    //Should do an api call to ask for LLM output when needed
-    // I am way too lazy but this whole funciton really should be in
-    // another javascript file and imported
-
-    //if performance is rlly bad may want to convert nodes/edges to a dictionary first
-    
-    ///START OF Helper functions of runSchema
-    function runAPILLM(text, ){
-      // eventually want to make database so users can login and access
-      // saved context from a JSON database, but to save time for now
-      // just uses a smaller context that is removed whem webpage reloaded
-
-      //Calls API using fetch, the return it gets from the API should be 
-      //outputted to the chatbot messenger bot thingie somehow and also
-      //stored into a context dictionary
-    }
-    function dictionaryify(nodeOrEdgeList){
-      // takes the schema and converts it from one where the nodes and edges
-      // are stored in a list of dictionaries and instead makes it a 
-      // dictionary, where each key is the id and the value is the dictionary
-      // with information 
-      // using this at the beginning should allow us to make much simpler
-      // code for our helper functions
-    }
-    function findRoots(schemaDict: {} ){
-      // Finds the roots of the schema
-      let stack : [] = []
-      for(let edge_i in schemaDict['edges']){
-        if (schemaDict['edges'][edge_i] ! in stack){
-            stack.push(schemaDict['edges'][edge_i]['source'])
-        }
-      }
-      for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
-        if (schemaDict['edges'][edge_i]['target'] in stack){
-          console.log("Removing edge from stack")
-
-        }
-      }
-    }
-    
-    function findOrphanedNodes(schemaDict){
-      //finds nodes without edges
-    }
-    
-    function checkBranch(nodeID, schemaDict){
-      //check if a node ever results in a terminal branch
-    }
-    
-    function checkIsTerminalBranchNode(nodeID, schemaDict){
-      //check if a node is the end of a branch
-    }
-    
-    function checkLoop(nodeID, schemaDict, truthList, seen){
-      //Recursively checks if following a node's targets only results in a terminal branch, returns record of (bool, list)
-      //bool is True if the graph is a loop
-    }
-    
-    function updateNodePrompts(nodePromptDictionary, schemaDict){
-      //Takes a mapping of node id's to a prompt to map to it, makes a copy of
-      //schema dictionary with the updated prompts and returns it
-    }
-
-    function removeNodeIds(nodeIdList, schemaDict){
-      // Takes a list of nodes to be removed by ID and returns a new dictionary
-      // with the id's removed
-    }
-
-    function removeEdgeIDs(edgeIdList, schemaDict){
-      //Takes a list of edges to be removed by ID and returns a new dictionary
-      // with the id's removed
-
-    }
-
-    function enforceDictUniqueID(id, dictionary){
-      // takes a dictionary and an id, returns the id of the id does not appear
-      // in the keys of dictionary, returns id with a tail end number if it does   
-    }
-
-    function retrieveNodePrompt(id, schemaDict){
-      // Retrieve the prompt mapping to a node by traversing list of nodes
-    }
-
-    ///START OF GRAPH TRAVERSAAL
-    ///Please make the logic behind graph traversal more readable than
-    ///in the python script
-
-    //Base case: Check if schema dictionary has no roots
-
-      //Special case: graph is a loop
-
-          //Special case: loops diverge
-    
-    //Recursive case: Schema dictionary has roots
- }
-///END OF RUNSCHEMA FUNCTION
-
-/////
 
   //stuff for copy pasting nodes
 
@@ -282,12 +183,18 @@ function Flow() {
             <input type="file" name="file" accept=".json" onChange={(e) => handleFileVariable(e)} /> <button onClick={() => onRestore(selectedFile)}>Load</button>
           </div>
           
-          <div style={{float: 'left'}}>
-            <button onClick={addChildNode}>Add node</button>
+          <div style = {{float: 'left'}}>
+            <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer">
+              <img src={shblog_icon} style= {{width: 40, height: 40, position: 'relative', left: 2}}/>
+            </a>
           </div>
 
-          <div>
-            <button onClick={runFlowButton}>Run flow</button>
+          <div style={{float: 'left', position: 'relative', left: 4}}>
+            <button onClick={addChildNode}><img src={plus_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+          </div>
+
+          <div style={{float: 'left', position: 'relative', left: 4}}>
+            <button onClick={runFlowButton}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
 
       

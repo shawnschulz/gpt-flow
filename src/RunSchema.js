@@ -1,5 +1,8 @@
- ///START OF RUNSCHEMA FUNCTION
- function runSchema(schemaDict) {
+import axios from 'axios'
+
+///START OF RUNSCHEMA FUNCTION
+ function runSchema(listedSchemaDict) {
+    console.log("inside runSchema")
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
     //Should do an api call to ask for LLM output when needed
     // I am way too lazy but this whole funciton really should be in
@@ -16,29 +19,57 @@
       //Calls API using fetch, the return it gets from the API should be 
       //outputted to the chatbot messenger bot thingie somehow and also
       //stored into a context dictionary
+      axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
-    function dictionaryify(nodeOrEdgeList){
+
+    function schemaListToDictionaary(schemaList) {
+      console.log("running schemaListToDictionary")
+      let newDict={};
+      let copy={};
+      for (let dict_i in schemaList){
+          Object.assign(copy, schemaList[dict_i])
+          newDict[schemaList[dict_i]['id']] = copy
+      }
+      return newDict;
+    }
+
+    function dictionaryify(schemaDict){
       // takes the schema and converts it from one where the nodes and edges
       // are stored in a list of dictionaries and instead makes it a 
       // dictionary, where each key is the id and the value is the dictionary
       // with information 
       // using this at the beginning should allow us to make much simpler
       // code for our helper functions
+      console.log("running dictionaryify")
+      let newDict = {'nodes':{}, 'edges':{}}
+      let nodesDict = schemaListToDictionaary(schemaDict['nodes'])
+      let edgesDict = schemaListToDictionaary(schemaDict['edges'])
+      newDict['nodes'] = nodesDict
+      newDict['edges'] = edgesDict
+      console.log(newDict)
+      return newDict
     }
-    function findRoots(schemaDict: {} ){
-      // Finds the roots of the schema
-      let stack : [] = []
-      for(let edge_i in schemaDict['edges']){
-        if (schemaDict['edges'][edge_i] ! in stack){
-            stack.push(schemaDict['edges'][edge_i]['source'])
-        }
-      }
-      for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
-        if (schemaDict['edges'][edge_i]['target'] in stack){
-          console.log("Removing edge from stack")
 
-        }
-      }
+    function findRoots(schemaDict){
+      // Finds the roots of the schema
+
+      // for(let edge_i in schemaDict['edges']){
+      //   if (schemaDict['edges'][edge_i] ! in stack){
+      //       stack.push(schemaDict['edges'][edge_i]['source'])
+      //   }
+      // }
+      // for (let edge_i = 0; edge_i < schemaDict['edges'].length; edge_i++){
+      //   if (schemaDict['edges'][edge_i]['target'] in stack){
+      //     console.log("Removing edge from stack")
+
+      //   }
+      // }
     }
     
     function findOrphanedNodes(schemaDict){
@@ -83,6 +114,8 @@
       // Retrieve the prompt mapping to a node by traversing list of nodes
     }
 
+    var schemaDict = dictionaryify(listedSchemaDict)
+    return(schemaDict)
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
@@ -96,5 +129,5 @@
     //Recursive case: Schema dictionary has roots
  }
 ///END OF RUNSCHEMA FUNCTION
-
+export default runSchema
 /////
