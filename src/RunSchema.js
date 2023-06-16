@@ -71,7 +71,7 @@ import axios from 'axios'
         if (stack.includes(schemaDict['edges'][edgeKey]['target'])){
           console.log("(DEBUG) findRoots: Removing edge from stack")
           console.log(edgeKey)
-          let index = stack.indexOf((stack.includes(schemaDict['edges'][edgeKey]['target'])))
+          let index = stack.indexOf(schemaDict['edges'][edgeKey]['target'])
           if (index > -1){
             stack.splice(index, 1)
           }
