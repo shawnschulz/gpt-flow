@@ -145,10 +145,32 @@ import axios from 'axios'
       return(final_value)
     }
     
-    function checkLoop(nodeID, schemaDict, truthList = [], seen){
+    function checkLoop(nodeID, schemaDict, truthList = [], seen = []){
       //Recursively checks if following a node's targets only results in a terminal branch, returns record of (bool, list)
       //bool is True if the graph is a loop
-
+      let targetList = []
+      if (targetList.includes(nodeID)){
+          return true
+      }
+      else{
+        seen.push(nodeID)
+        for (let edgeKey in schemaDict['edges']){
+          let edge = schemaDict['edges'][edgeKey]
+          if (edge['source'] == nodeID) {
+            targetList.push(edge['target'])
+          }
+          else {
+            truthList.push(false)
+          }
+        }
+        for (let target in targetList){
+          truthList.push(checkLoop(target, schemaDict, truthList, seen=seen))
+          console.log("(DEBUG) checkLoop: printing truthlist")
+          console.log(truthList) 
+          return(truthList.includes(true))
+        }
+      }
+      return(truthList.includes(true))
     }
     
     function updateNodePrompts(nodePromptDictionary, schemaDict){
