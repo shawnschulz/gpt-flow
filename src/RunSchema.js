@@ -204,6 +204,22 @@ import axios from 'axios'
     function removeNodeIds(nodeIdList, schemaDict){
       // Takes a list of nodes to be removed by ID and returns a new dictionary
       // with the id's removed
+
+      
+      let newDict = {}
+      Object.assign(newDict, schemaDict)
+      for (let idIndex in nodeIdList) {
+        let id = nodeIdList[idIndex]
+        for (let nodeKey in newDict['nodes']){
+          let node = newDict['nodes'][nodeKey]
+          if (node['id'] == id){
+            delete newDict['nodes'][nodeKey]
+          }
+        }
+      }
+      console.log("DEBUG: the dictionary with updated nodes is:")
+      console.log(newDict)
+      return(newDict)
     }
 
     function removeEdgeIDs(edgeIdList, schemaDict){
@@ -222,7 +238,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(updateNodePrompts({"Executive":"update!"}, schemaDict))
+    return(removeNodeIds(['Executive', 'Programmer'], schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
