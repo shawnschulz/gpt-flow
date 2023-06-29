@@ -148,7 +148,6 @@ import axios from 'axios'
     function checkLoop(nodeID, schemaDict, truthList = [], seen = []){
       //Recursively checks if following a node's targets only results in a terminal branch, returns record of (bool, list)
       //bool is True if the graph is a loop
-      //this funciton is currently not working at all
       let targetList = []
       
       if (seen.includes(nodeID)){
@@ -226,6 +225,19 @@ import axios from 'axios'
       //Takes a list of edges to be removed by ID and returns a new dictionary
       // with the id's removed
 
+      //removeEdgeIds currently not working
+      let newDict = {}
+      Object.assign(newDict, schemaDict)
+      for (let idIndex in edgeIdList){
+        let edgeIdToRemove = edgeIdList[idIndex]
+        for (edgeKey in newDict['edges']){
+          let edge = newDict['edges']['edgeKey']
+          if (edgeKey == edgeIdToRemove){
+            delete newDict['edges'][edgeKey]
+          }
+        }
+      }
+      return(newDict)
     }
 
     function enforceDictUniqueID(id, dictionary){
@@ -238,7 +250,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(removeNodeIds(['Executive', 'Programmer'], schemaDict))
+    return(removeNodeIds(["reactflow__edge-Executivebottom-Programmertop"], schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
