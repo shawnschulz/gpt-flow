@@ -167,6 +167,7 @@ import axios from 'axios'
             truthList.push(false)
           }
         }
+        //Note: always remember javascript loops by iterator # not the value in the array!
         for (let targetIndex in targetList){
           let target = targetList[targetIndex]
           console.log("DEBUG: target is:")
@@ -185,6 +186,19 @@ import axios from 'axios'
     function updateNodePrompts(nodePromptDictionary, schemaDict){
       //Takes a mapping of node id's to a prompt to map to it, makes a copy of
       //schema dictionary with the updated prompts and returns it
+      let newDict = {}
+      Object.assign(newDict, schemaDict)
+      for (let nodeKey in newDict['nodes']){
+        let node = newDict['nodes'][nodeKey]
+        if (Object.keys(nodePromptDictionary).includes(node['id'])){
+          let oldPrompt = node['data']['prompt']
+          let newPrompt = nodePromptDictionary[node['id']].concat(' \n', oldPrompt)
+          newDict['nodes'][nodeKey]['data']['prompt'] = newPrompt
+        }
+      }
+      console.log("DEBUG: the dictionary with updated prompts is:")
+      console.log(newDict)
+      return(newDict)
     }
 
     function removeNodeIds(nodeIdList, schemaDict){
@@ -208,7 +222,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(checkLoop("Executive", schemaDict))
+    return(updateNodePrompts({"Executive":"update!"}, schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
