@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 ///START OF RUNSCHEMA FUNCTION
- function runSchema(listedSchemaDict) {
+ function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}) {
     console.log("inside runSchema")
     console.log(listedSchemaDict)
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
@@ -27,6 +27,8 @@ import axios from 'axios'
       // also take output and send to chatbot message as output
       // this function should also be called to ask the chatbot questions directly,
       // should be able to just import from this file in App.tsx
+
+      //this will return an ARRAY, the first element will be the output string and the second element will be a context object
       axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
       .then(function (response) {
         console.log(response);
@@ -286,18 +288,178 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(retrieveNodePrompt('00001', schemaDict))
+    
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
 
+    //define some objects for later
+    console.log("DEBUG: defining objects for later")
+    let roots = findRoots(schemaDict)
+    nodeToSendOutputs = {}
+    let nextSchemaDictionary = {}
+    Object.assign(nextSchemaDictionary, schemaDict)
+    let orphanedNodes = findOrphanedNodes(schemaDict).filter(x => !seenNodes.includes(x));
+    console.log("DEBUG: checking orphaned Nodes that weren't seen, double check that seen nodes aren't included")
+    console.log(orphanedNodes)
+    console.log(seenNodes)
+
     //Base case: Check if schema dictionary has no roots
-
-      //Special case: graph is a loop
-
-          //Special case: loops diverge
+    if (roots.length == 0 && orphanedNodes.length == 0 && Object.keys(schemaDict['edges']).length == 0) {
+      console.log("DEBUG: no roots, orphaned nodes or edges. Exiting.")
+      return(schemaDict)
+    }
     
+      //Special case: graph is a loop
+      if (roots.length == 0 && orphanedNodes.lenght == 0 ){
+        //another check to make sure graph isn't just lacking edges altogether
+        console.log("DEBUG: we are starting the checks before loop case. Here's the node we are checking:")
+        console.log(nextNodeInLoop)
+        if (!schemaDictionary['edges']){
+          return(schemaDict)
+        }
+        //LOOP CASE PROPER: enters this else if schema isn't just all orphaned
+        else {
+          //if we have just started, find a node to start on that's in the loop
+          if ( nextNodeInLoop == "start"){
+            for (nodeKey in schemaDict['nodes']){
+              let node = schemaDict['nodes'][nodeKey]
+              if ( checkLoop(node['id'], schemaDict)){
+                let currentNode = node['id']
+                console.log("DEBUG: printing current node checking if in loop")
+                break
+              }
+              else{
+                console.log("DEBUG: Node just checked is a terminal branch, skipping to find start node!")
+              }
+
+            }
+          }
+          else{
+            let currentNode = nextNodeInLoop
+          }
+        //In the future may want to change the way script combines received inputs
+        //Now that have where to start, start running the loop case
+
+        //Start by running the initial node
+        let nodePrompt = receivedInput.concat(retrieveNodePrompt(currentNode, schemaDict))
+        console.log("DEBUG: the current node prompt is: ")
+        console.log(nodePrompt)
+        //this function call should handle outputting hte message to the chatbot
+        let LLMRecord = runAPILLM(nodePrompt, contextDict)
+        let output = LLMRecord[0]
+        let contextDict = LLMRecord[1]
+        let nextReceivedInput = output.concat(" ")
+        for (let edgKey in nextSchemaDictionary['edges']){
+          let edge = nextSchemaDictionary['edges'][edgeKey]
+          if (edge['source'] == currentNode){
+            edgeID = edge["id"]
+            nodeToSendOutputs[edge['target']] = output
+            console.log("DEBUG: next nodes are:")
+            console.log(nodeToSendOutputs)
+          }
+        let nextLoops = []
+        let nextTerminal = []
+        }
+        //this is convoluted but need tofigure out where to send output to
+        for ( let nodeID in nodeToSendOutputs){
+          console.log("DEBUG: The Node ID is:")
+          console.log(nodeID)
+          console.log("DEBUG: check loop is:")
+          console.log(checkLoop(nodeID,schemaDict))
+
+          if (checkLoop(nodeID, schemaDict)){
+            nextLoops.push(nodeID)
+            console.log("DEBUG: Added to next loop")
+            console.log(nextLoops)
+          }
+
+          if(checkIsTerminalBranchNode(nodeID, schemaDict)){
+            nextTerminal.push(nodeID)
+            console.log("DEBUG: Added to next terminal")
+          }
+        }  
+        //if the next node is terminal, simply do the next node
+        for (let i in nextTerminal){
+          console.log("In terminal")
+          console.log(nextTerminal[i])
+          runSchema(schemaDict, nextNodeInLoop=nextTerminal[i], receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack)
+        }
+        //if the next node is a part of a loop and there is only one next loop, that means
+        // we don't have a diverging loop and can also simply run the next node
+        if (nextLoops.length == 1){
+          console.log("Detected next loop as length 1")
+          runSchema(schemaDict, nextNodeInLoop=nextLoops[0],receivedInput=nextReceivedInput,divergingLoopStack=divergingLoopStack)
+        } 
+        //END OF NON DIVERGING LOOP CASE
+
+        //DIVERGING LOOP CASE PROPER
+        else if (nextLoops.length > 1){
+          //want to ensure run different diverging loops in order
+          if (divergingLoopStack.length == 0){
+            // first time seeing diverging loop, make queued loops the loop stack
+            runSchema(schemaDict, nextNodeInLoop=nextLoops[0], receivedInput=nextReceivedInput, divergingLoopStack=nextLoops)
+          }
+          else if (divergingLoopStack.length > 0){
+            //need to check if set in nextloops and diverging
+            const eqSet = (set1, set2) =>
+              set1.size === set2.size &&
+              [...set1].every((x) => set2.has(x));
+
+            if(!eqSet(Set(nextLoops), Set(divergingLoopStack))){
+              divergingLoopStack = nextLoops
+              runSchema(schemaDict, nextNodeInLoop=divergingLoopStack[0], receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack)
+            }
+            else if (eqSet(Set(nextLoops), Set(divergingLoopStack))){
+              //following line should hopefully put first element to last position
+              divergingLoopStack.push(divergingLoopStack.shift())
+              console.log("DEBUG: New diverging loop stack is:")
+              console.log(divergingLoopStack)
+              runSchema(schemaDict, nextNodeInLoop=divergingLoopStack[0], receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict)
+            }
+          }
+        }
+        }
+      }
     //Recursive case: Schema dictionary has roots
+      else {
+        //Recursive case: Schema dictionary has roots. Get the outputs from the source node, make 
+        //an updated schema dictionary where target nodes have the new outputs, and remove
+        //the edges that have already been checked
+        console.log("DEBUG: We are doing the tree case")
+        let edgeIdToRemove=[]
+        roots = roots.concat(orphanedNodes)
+        let newSeenNodes = seenNodes
+        for (let i in roots){
+          let root = roots[i]
+          for (let edgeKey in nextSchemaDictionary['edges']){
+            let edge = nextSchemaDictionary['edges'][edgeKey]
+            if (edge['source']==root){
+              edgeIdToRemove.push(edge['id'])
+              nodeToSendOutputs[edge['target']] = ""
+              console.log("DEBUG: recursive case printing the next nodes")
+              console.log(nodeToSendOutputs)
+              console.log("Printing the edges to be removed")
+              console.log(edgeIdToRemove)
+              console.log("Printing new seen nodes")
+              console.log(newSeenNodes)
+            }
+          }
+          let LLMRecord = runAPILLM(root, nextSchemaDictionary, contextDict)
+          newSeenNodes.push(root)
+
+          //construct dictionary of nodes and outputs being sent to them
+          // may need to enforce checking of key existencee
+          for (let nodeIDKey in nodeToSendOutputs){
+            nodeToSendOutputs[nodeIDKey] = output
+          }
+          //in the future may want to change way script handles combining prompts
+          let updatedPromptsDict = updateNodePrompts(nodeToSendOutputs, schemaDict)
+          nextSchemaDictionary= removeEdgeIDs(edgeIdToRemove, updatedPromptsDict)
+
+        }
+       return(runSchema(nextSchemaDictionary, seenNodes=newSeenNodes, contextDict=contextDict))
+      }
  }
 ///END OF RUNSCHEMA FUNCTION
 export default runSchema
