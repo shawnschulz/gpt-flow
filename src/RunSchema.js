@@ -225,7 +225,6 @@ import axios from 'axios'
       //Takes a list of edges to be removed by ID and returns a new dictionary
       // with the id's removed
 
-      //removeEdgeIds currently not working
       let newDict = {}
       Object.assign(newDict, schemaDict)
       for (let idIndex in edgeIdList){
@@ -242,7 +241,31 @@ import axios from 'axios'
 
     function enforceDictUniqueID(id, dictionary){
       // takes a dictionary and an id, returns the id of the id does not appear
-      // in the keys of dictionary, returns id with a tail end number if it does   
+      // in the keys of dictionary, returns id with a tail end number if it does 
+
+      function checkNumber(c){
+        if (c >= '0' && c <= '9'){
+          return(true)
+        }
+        else{
+          return(false)
+        }
+      }
+
+
+      if (Object.keys(dictionary).includes(id)) {
+        console.log(checkNumber(id.slice(-1)))
+        if ( checkNumber(id.slice(-1)) ){
+          let newId = id.slice(0, -1).concat((parseInt(id.slice(-1)) + 1).toString())
+          console.log(newId)
+          return(newId)
+        }
+        else{
+          let newId = id + "_1"
+          return(newId)
+        }
+      }
+      return(id)
     }
 
     function retrieveNodePrompt(id, schemaDict){
@@ -250,7 +273,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(removeEdgeIDs(["reactflow__edge-Executivebottom-Programmertop"], schemaDict))
+    return(enforceDictUniqueID("Bro", {"Bro_1":"hello"}))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
