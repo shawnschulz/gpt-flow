@@ -148,12 +148,16 @@ import axios from 'axios'
     function checkLoop(nodeID, schemaDict, truthList = [], seen = []){
       //Recursively checks if following a node's targets only results in a terminal branch, returns record of (bool, list)
       //bool is True if the graph is a loop
+      //this funciton is currently not working at all
       let targetList = []
-      if (targetList.includes(nodeID)){
+      
+      if (seen.includes(nodeID)){
           return true
       }
       else{
         seen.push(nodeID)
+        console.log("DEBUG: seen is:")
+        console.log(seen)
         for (let edgeKey in schemaDict['edges']){
           let edge = schemaDict['edges'][edgeKey]
           if (edge['source'] == nodeID) {
@@ -163,10 +167,15 @@ import axios from 'axios'
             truthList.push(false)
           }
         }
-        for (let target in targetList){
+        for (let targetIndex in targetList){
+          let target = targetList[targetIndex]
+          console.log("DEBUG: target is:")
+          console.log(target)
           truthList.push(checkLoop(target, schemaDict, truthList, seen=seen))
           console.log("(DEBUG) checkLoop: printing truthlist")
           console.log(truthList) 
+          console.log("DEBUG: checking targetList")
+          console.log(targetList)
           return(truthList.includes(true))
         }
       }
@@ -199,7 +208,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(checkIsTerminalBranchNode("00001", schemaDict))
+    return(checkLoop("Executive", schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
