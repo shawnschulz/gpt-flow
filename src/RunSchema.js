@@ -20,6 +20,13 @@ import axios from 'axios'
       //Calls API using fetch, the return it gets from the API should be 
       //outputted to the chatbot messenger bot thingie somehow and also
       //stored into a context dictionary
+
+      //basic functions:
+      //take text and context dict and use fetch to send it to backend to run on llm
+      // get the return from fetch, take that and update the context dict
+      // also take output and send to chatbot message as output
+      // this function should also be called to ask the chatbot questions directly,
+      // should be able to just import from this file in App.tsx
       axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
       .then(function (response) {
         console.log(response);
