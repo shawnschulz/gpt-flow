@@ -14,7 +14,7 @@ import ActionProvider from './bot/ActionProvider'
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
     ///START OF Helper functions of runSchema
-    function runAPILLM( prompt, contextDict){
+    function runAPILLM(prompt, contextDict, nodeID){
       // eventually want to make database so users can login and access
       // saved context from a JSON database, but to save time for now
       // just uses a smaller context that is removed whem webpage reloaded
@@ -32,7 +32,7 @@ import ActionProvider from './bot/ActionProvider'
 
       //this will return an ARRAY, the first element will be the output string and the second element will be a context object
       let stringifiedContext = JSON.stringify(contextDict)
-
+      let record = []
       let contextAddedPrompt = "Instruction: ".concat(stringifiedContext).concat(" \n").concat(prompt)
       console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
       console.log(contextAddedPrompt)
@@ -45,6 +45,15 @@ import ActionProvider from './bot/ActionProvider'
         })
         .then(({data}) => {
       });
+      record.push(response)
+      //check if context dict is empty before enforcing unique id
+      if (Object.keys(contextDict).length == 0){
+        contextDict[nodeID] = response
+      }
+      else {
+        contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
+      }
+      record.push(contextDict)
       this.ActionProvider.outputText(response)
       return(response)
     }
