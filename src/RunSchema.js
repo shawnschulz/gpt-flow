@@ -230,8 +230,8 @@ import axios from 'axios'
       Object.assign(newDict, schemaDict)
       for (let idIndex in edgeIdList){
         let edgeIdToRemove = edgeIdList[idIndex]
-        for (edgeKey in newDict['edges']){
-          let edge = newDict['edges']['edgeKey']
+        for (let edgeKey in newDict['edges']){
+          console.log(edgeKey)
           if (edgeKey == edgeIdToRemove){
             delete newDict['edges'][edgeKey]
           }
@@ -250,7 +250,7 @@ import axios from 'axios'
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(removeNodeIds(["reactflow__edge-Executivebottom-Programmertop"], schemaDict))
+    return(removeEdgeIDs(["reactflow__edge-Executivebottom-Programmertop"], schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
