@@ -1,4 +1,6 @@
 import axios from 'axios'
+import MessageParser from './bot/MessageParser'
+import ActionProvider from './bot/ActionProvider'
 
 ///START OF RUNSCHEMA FUNCTION
  function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}) {
@@ -12,7 +14,7 @@ import axios from 'axios'
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
     ///START OF Helper functions of runSchema
-    function runAPILLM(text, ){
+    function runAPILLM( prompt, contextDict){
       // eventually want to make database so users can login and access
       // saved context from a JSON database, but to save time for now
       // just uses a smaller context that is removed whem webpage reloaded
@@ -29,13 +31,22 @@ import axios from 'axios'
       // should be able to just import from this file in App.tsx
 
       //this will return an ARRAY, the first element will be the output string and the second element will be a context object
-      axios.post('http://127.0.0.1:4269/schema_json_handler', schema)
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
+      let stringifiedContext = JSON.stringify(contextDict)
+
+      let contextAddedPrompt = "Instruction: ".concat(stringifiedContext).concat(" \n").concat(prompt)
+      console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
+      console.log(contextAddedPrompt)
+      let response = axios
+        .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+        })
+        .then(({data}) => {
       });
+      this.ActionProvider.outputText(response)
+      return(response)
     }
 
     function schemaListToDictionary(schemaList) {
@@ -445,11 +456,12 @@ import axios from 'axios'
               console.log(newSeenNodes)
             }
           }
-          let LLMRecord = runAPILLM(root, nextSchemaDictionary, contextDict)
+          let promptFromDict = nextSchemaDictionary['nodes'][root]['data']['prompt']
+          let LLMRecord = runAPILLM(promptFromDict, contextDict)
           newSeenNodes.push(root)
 
           //construct dictionary of nodes and outputs being sent to them
-          // may need to enforce checking of key existencee
+          // may need to enforce checking of key existence
           for (let nodeIDKey in nodeToSendOutputs){
             nodeToSendOutputs[nodeIDKey] = output
           }
