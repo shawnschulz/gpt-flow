@@ -268,12 +268,18 @@ import axios from 'axios'
       return(id)
     }
 
-    function retrieveNodePrompt(id, schemaDict){
+    function retrieveNodePrompt(nodeId, schemaDict){
       // Retrieve the prompt mapping to a node by traversing list of nodes
+      for ( let nodeKey in schemaDict['nodes']) {
+        let node = schemaDict['nodes'][nodeKey]
+        if (node['id'] == nodeId){
+          return(node['data']['prompt'])
+        }
+      }
     }
 
     var schemaDict = dictionaryify(listedSchemaDict)
-    return(enforceDictUniqueID("Bro", {"Bro_1":"hello"}))
+    return(retrieveNodePrompt('00001', schemaDict))
     ///START OF GRAPH TRAVERSAAL
     ///Please make the logic behind graph traversal more readable than
     ///in the python script
