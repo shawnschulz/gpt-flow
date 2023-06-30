@@ -3,7 +3,7 @@ import MessageParser from './bot/MessageParser'
 import ActionProvider from './bot/ActionProvider'
 
 ///START OF RUNSCHEMA FUNCTION
- function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}) {
+ function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider) {
     console.log("inside runSchema")
     console.log(listedSchemaDict)
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
@@ -54,7 +54,7 @@ import ActionProvider from './bot/ActionProvider'
         contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
       }
       record.push(contextDict)
-      this.ActionProvider.outputText(response)
+      actionProvider.outputText(response)
       return(response)
     }
 
@@ -316,7 +316,7 @@ import ActionProvider from './bot/ActionProvider'
     //define some objects for later
     console.log("DEBUG: defining objects for later")
     let roots = findRoots(schemaDict)
-    nodeToSendOutputs = {}
+    let nodeToSendOutputs = {}
     let nextSchemaDictionary = {}
     Object.assign(nextSchemaDictionary, schemaDict)
     let orphanedNodes = findOrphanedNodes(schemaDict).filter(x => !seenNodes.includes(x));
