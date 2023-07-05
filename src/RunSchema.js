@@ -36,6 +36,9 @@ import ActionProvider from './bot/ActionProvider'
       let contextAddedPrompt = "Instruction: ".concat(stringifiedContext).concat(" \n").concat(prompt)
       console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
       console.log(contextAddedPrompt)
+
+      //this does not fetch this properly
+
       let response = axios
         .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
           headers: {
@@ -54,7 +57,8 @@ import ActionProvider from './bot/ActionProvider'
         contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
       }
       record.push(contextDict)
-      actionProvider.outputText(response)
+      //PUT WORKING CODE TO OUTPUT TO CHATBOT BOX HERE
+      //actionProvider.outputText(response)
       return(response)
     }
 
