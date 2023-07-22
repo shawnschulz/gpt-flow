@@ -32,34 +32,44 @@ import ActionProvider from './bot/ActionProvider'
 
       //this will return an ARRAY, the first element will be the output string and the second element will be a context object
       let stringifiedContext = JSON.stringify(contextDict)
-      let record = []
+      const record = []
       let contextAddedPrompt = "Instruction: ".concat(stringifiedContext).concat(" \n").concat(prompt)
       console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
       console.log(contextAddedPrompt)
 
       //this does not fetch this properly
-
-      let response = axios
-        .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-        })
-        .then(({data}) => {
-      });
-      record.push(response)
-      //check if context dict is empty before enforcing unique id
-      if (Object.keys(contextDict).length == 0){
-        contextDict[nodeID] = response
-      }
-      else {
-        contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
-      }
-      record.push(contextDict)
-      //PUT WORKING CODE TO OUTPUT TO CHATBOT BOX HERE
-      //actionProvider.outputText(response)
-      return(response)
+      async function postAwaitResponse() {
+        try{
+          const response = await axios
+          .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          })
+          //check if context dict is empty before enforcing unique id
+          if (Object.keys(contextDict).length == 0){
+            contextDict[nodeID] = response
+          }
+          else {
+            contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
+          }
+          record.push(contextDict)
+          //PUT WORKING CODE TO OUTPUT TO CHATBOT BOX HERE
+          //actionProvider.outputText(response)
+          console.log("Printing the response should have received from API:")
+          console.log(response)
+          console.log(response["data"])
+          return(response["data"])
+        }
+        catch (e){
+          console.log(e)
+        }
+      } 
+      let llmResponse = postAwaitResponse()
+      return(llmResponse)
+      
+      
     }
 
     function schemaListToDictionary(schemaList) {
@@ -371,6 +381,8 @@ import ActionProvider from './bot/ActionProvider'
         console.log(nodePrompt)
         //this function call should handle outputting hte message to the chatbot
         let LLMRecord = runAPILLM(nodePrompt, contextDict)
+        console.log("DEBUG: here's the llmrecord")
+        console.log(LLMRecord)
         let output = LLMRecord[0]
         let contextDict = LLMRecord[1]
         let nextReceivedInput = output.concat(" ")
