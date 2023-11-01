@@ -14,7 +14,7 @@ import ActionProvider from './bot/ActionProvider'
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
     ///START OF Helper functions of runSchema
-    function runAPILLM(prompt, contextDict, nodeID){
+    function runAPILLM(prompt, contextDict){
       // eventually want to make database so users can login and access
       // saved context from a JSON database, but to save time for now
       // just uses a smaller context that is removed whem webpage reloaded
@@ -31,45 +31,65 @@ import ActionProvider from './bot/ActionProvider'
       // should be able to just import from this file in App.tsx
 
       //this will return an ARRAY, the first element will be the output string and the second element will be a context object
-      let stringifiedContext = JSON.stringify(contextDict)
+      contextDict["Instruction"] = prompt
+      let contextAddedPrompt = JSON.stringify(contextDict)
       const record = []
-      let contextAddedPrompt = "Instruction: ".concat(stringifiedContext).concat(" \n").concat(prompt)
       console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
       console.log(contextAddedPrompt)
 
       //this does not fetch this properly
-      async function postAwaitResponse() {
-        try{
-          const response = await axios
-          .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
+      // PLEASE JUST DELETE THIS COMMENTED CODE WHEN YOU GET IT TO WORK
+      // async function postAwaitResponse() {
+      //   try{
+      //     const response = await axios
+      //     .post('http://127.0.0.1:4269/schema_json_handler', contextAddedPrompt, {
+      //       headers: {
+      //         Accept: "application/json",
+      //         "Content-Type": "application/json;charset=UTF-8",
+      //       },
+      //     })
+      //     //check if context dict is empty before enforcing unique id
+      //     if (Object.keys(contextDict).length == 0){
+      //       contextDict[nodeID] = response
+      //     }
+      //     else {
+      //       contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
+      //     }
+      //     record.push(contextDict)
+      //     //PUT WORKING CODE TO OUTPUT TO CHATBOT BOX HERE
+      //     //actionProvider.outputText(response)
+      //     console.log("Printing the response should have received from API:")
+      //     console.log(response)
+      //     console.log(response["data"])
+      //     return(response["data"])
+      //   }
+      //   catch (e){
+      //     console.log(e)
+      //   }
+      // } 
+      // let llmResponse = postAwaitResponse()
+      
+      async function sendDictionaryAndProcess(contextAddedPrompt) {
+        try {
+          const response = await fetch('http://127.0.0.1:4269/schema_json_handler', {
+            method: 'POST',
             headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
+              'Content-Type': 'application/json',
             },
-          })
-          //check if context dict is empty before enforcing unique id
-          if (Object.keys(contextDict).length == 0){
-            contextDict[nodeID] = response
+            body: contextAddedPrompt
           }
-          else {
-            contextDict[enforceDictUniqueID(contextDict, nodeID)] = response
+          );
+          if(!response.ok) {
+            throw new Error('HTTP error! status ${response.status}');
           }
-          record.push(contextDict)
-          //PUT WORKING CODE TO OUTPUT TO CHATBOT BOX HERE
-          //actionProvider.outputText(response)
-          console.log("Printing the response should have received from API:")
-          console.log(response)
-          console.log(response["data"])
-          return(response["data"])
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('There was a problem fetching the prompt response:', error)
         }
-        catch (e){
-          console.log(e)
-        }
-      } 
-      let llmResponse = postAwaitResponse()
+      }
+      let llmResponse = sendDictionaryAndProcess(contextAddedPrompt)
       return(llmResponse)
-      
-      
     }
 
     function schemaListToDictionary(schemaList) {
