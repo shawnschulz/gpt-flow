@@ -88,7 +88,11 @@ import ActionProvider from './bot/ActionProvider'
           console.error('There was a problem fetching the prompt response:', error)
         }
       }
-      let llmResponse = sendDictionaryAndProcess(contextAddedPrompt)
+      sendDictionaryAndProcess(contextAddedPrompt).then(
+        processedData => {
+          
+        }
+      )
       return(llmResponse)
     }
 
