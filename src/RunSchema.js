@@ -1,7 +1,8 @@
 import ActionProvider from './bot/ActionProvider'
 
 ///START OF RUNSCHEMA FUNCTION
- function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider, WE_ARE_IN_A_LOOP=false) {
+
+ function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider, WE_ARE_IN_A_LOOP=false, returnDict={"contextDictionary":{}, "ChatBoxList":[]}) {
     console.log("inside runSchema")
     console.log(listedSchemaDict)
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
@@ -12,23 +13,7 @@ import ActionProvider from './bot/ActionProvider'
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
     ///START OF Helper functions of runSchema
-    function runAPILLM(prompt, contextDict, nextSchemaDictionary, seenNodes, currentNode, schemaDict, divergingLoopStack, WE_ARE_IN_A_LOOP, nodeToSendOutputs){
-      // eventually want to make database so users can login and access
-      // saved context from a JSON database, but to save time for now
-      // just uses a smaller context that is removed whem webpage reloaded
-
-      //Calls API using fetch, the return it gets from the API should be 
-      //outputted to the chatbot messenger bot thingie somehow and also
-      //stored into a context dictionary
-
-      //basic functions:
-      //take text and context dict and use fetch to send it to backend to run on llm
-      // get the return from fetch, take that and update the context dict
-      // also take output and send to chatbot message as output
-      // this function should also be called to ask the chatbot questions directly,
-      // should be able to just import from this file in App.tsx
-
-      //this will return an ARRAY, the first element will be the output string and the second element will be a context object
+    function runAPILLM(prompt, contextDict, nextSchemaDictionary, seenNodes, currentNode, schemaDict, divergingLoopStack, WE_ARE_IN_A_LOOP, nodeToSendOutputs, returnDict={"contextDictionary":{}, "ChatBoxList":[]}){
 
       //this is some of the most disgusting code i've ever written. But it just works!
       if (Object.keys(contextDict).length == 0){
@@ -44,6 +29,7 @@ import ActionProvider from './bot/ActionProvider'
             contextDict['Context'] = prompt
           }
       }
+      returnDict["contextDictionary"] = contextDict
       let contextAddedPrompt = JSON.stringify(contextDict)
       const record = []
       console.log("DEBUG: calling api. here's what the contextAddedPrompt looks like:")
@@ -79,6 +65,8 @@ import ActionProvider from './bot/ActionProvider'
           let output =  LLMRecord["choices"][0]["text"].split("A:")[1]
           console.log("DEBUG: Here's the text output:")
           console.log(output)
+          let chatString = currentNode.concat(output)
+          returnDict["ChatBoxList"].push(chatString)
           let contextDict = LLMRecord[1]
           let nextReceivedInput = output.concat(" ")
           for (let edgeKey in nextSchemaDictionary['edges']){
@@ -121,13 +109,13 @@ import ActionProvider from './bot/ActionProvider'
             for (let i in nextTerminal){
               console.log("In terminal")
               console.log(nextTerminal[i])
-              runSchema(listedSchemaDict, nextNodeInLoop=nextTerminal[i], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, contextDict=contextDict)
+              return(runSchema(listedSchemaDict, nextNodeInLoop=nextTerminal[i], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, contextDict=contextDict, returnDict=returnDict))
             }
             //if the next node is a part of a loop and there is only one next loop, that means
             // we don't have a diverging loop and can also simply run the next node
             if (nextLoops.length == 1){
               console.log("Detected next loop as length 1")
-              runSchema(listedSchemaDict, nextNodeInLoop=nextLoops[0],seenNodes=seenNodes, receivedInput=nextReceivedInput,divergingLoopStack=divergingLoopStack, contextDict=contextDict)
+              return(runSchema(listedSchemaDict, nextNodeInLoop=nextLoops[0],seenNodes=seenNodes, receivedInput=nextReceivedInput,divergingLoopStack=divergingLoopStack, contextDict=contextDict, returnDict=returnDict))
             } 
             //END OF NON DIVERGING LOOP CASE
     
@@ -136,7 +124,7 @@ import ActionProvider from './bot/ActionProvider'
               //want to ensure run different diverging loops in order
               if (divergingLoopStack.length == 0){
                 // first time seeing diverging loop, make queued loops the loop stack
-                runSchema(listedSchemaDict, nextNodeInLoop=nextLoops[0], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=nextLoops, contextDict=contextDict)
+                return(runSchema(listedSchemaDict, nextNodeInLoop=nextLoops[0], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=nextLoops, contextDict=contextDict, returnDict=returnDict))
               }
               else if (divergingLoopStack.length > 0){
                 //need to check if set in nextloops and diverging
@@ -146,14 +134,14 @@ import ActionProvider from './bot/ActionProvider'
     
                 if(!eqSet(Set(nextLoops), Set(divergingLoopStack))){
                   divergingLoopStack = nextLoops
-                  runSchema(listedSchemaDict, nextNodeInLoop=divergingLoopStack[0], seenNodes = seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict)
+                  return(runSchema(listedSchemaDict, nextNodeInLoop=divergingLoopStack[0], seenNodes = seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict, returnDict=returnDict))
                 }
                 else if (eqSet(Set(nextLoops), Set(divergingLoopStack))){
                   //following line should hopefully put first element to last position
                   divergingLoopStack.push(divergingLoopStack.shift())
                   console.log("DEBUG: New diverging loop stack is:")
                   console.log(divergingLoopStack)
-                  runSchema(listedSchemaDict, nextNodeInLoop=divergingLoopStack[0], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict)
+                  return(runSchema(listedSchemaDict, nextNodeInLoop=divergingLoopStack[0], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict, returnDict=returnDict))
                 }
               }
             }
@@ -161,7 +149,6 @@ import ActionProvider from './bot/ActionProvider'
           else {
 
             console.log("WE ARE NOT IN A LOOP")
-            seenNodes.push(currentNode)
 
             //construct dictionary of nodes and outputs being sent to them
             // may need to enforce checking of key existence
@@ -171,8 +158,22 @@ import ActionProvider from './bot/ActionProvider'
             //in the future may want to change way script handles combining prompts
             let updatedPromptsDict = updateNodePrompts(nodeToSendOutputs, nextSchemaDictionary)
             let listedSchemaDict = schemaDictToList(updatedPromptsDict)
-            runSchema(listedSchemaDict, nextNodeInLoop=nextLoops[0], seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=nextLoops, contextDict=contextDict)
-
+            let branched_list = []
+            for (let nodeID in nodeToSendOutputs) {
+              // have to deal with the tree branching here
+              branched_list.push(runSchema(listedSchemaDict, currentNode=nodeID, seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict, returnDict=returnDict))
+            }
+            let contextDict = branched_list[-1]["contextDictionary"]
+            preFilterList = []
+            for (let returnedDict in branched_list) {
+              preFilterList.push(retrunedDict["ChatBoxList"])
+            }
+            let flatList = preFilterList.flat()
+            function onlyUnique(value, index, array) {
+              return array.indexOf(value) === index;
+            }
+            let uniqueList = flastList.filter(onlyUnique)
+            return {"contextDictionary":contextDict, "ChatBoxList":uniqueList}
           }
 
         }
@@ -359,7 +360,7 @@ import ActionProvider from './bot/ActionProvider'
         let node = newDict['nodes'][nodeKey]
         if (Object.keys(nodePromptDictionary).includes(node['id'])){
           let oldPrompt = node['data']['prompt']
-          let newPrompt = nodePromptDictionary[node['id']].concat(' \n', oldPrompt)
+          let newPrompt = oldPrompt.concat('\n').concat(nodePromptDictionary[node['id']])
           newDict['nodes'][nodeKey]['data']['prompt'] = newPrompt
         }
       }
@@ -507,7 +508,7 @@ import ActionProvider from './bot/ActionProvider'
         console.log(nodePrompt)
         nextSchemaDictionary= removeEdgeIDs(edgeIdToRemove, schemaDict)
         //this function call should handle outputting hte message to the chatbot
-        runAPILLM(nodePrompt, contextDict, nextSchemaDictionary=nextSchemaDictionary, seenNodes=seenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs)
+        return(runAPILLM(nodePrompt, contextDict, nextSchemaDictionary=nextSchemaDictionary, seenNodes=seenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs, returnDict=returnDict))
         //unfortunately, you done goofed it! we have to put the rest of this logic in the form of a
         //promise in runAPILLM, verry verry confusing, verry verry bad :(
         
@@ -522,6 +523,8 @@ import ActionProvider from './bot/ActionProvider'
         console.log("DEBUG: We are doing the tree case")
         let edgeIdToRemove=[]
         roots = roots.concat(orphanedNodes)
+        console.log("WHERE ARE MY FUCKING ROOTS WHY ARE THEY JUST GOING AWAY WHAT")
+        console.log(roots)
         let newSeenNodes = seenNodes
         for (let i in roots){
           let root = roots[i]
@@ -529,16 +532,16 @@ import ActionProvider from './bot/ActionProvider'
             let edge = nextSchemaDictionary['edges'][edgeKey]
             if (edge['source']==root){
               edgeIdToRemove.push(edge['id'])
-              nodeToSendOutputs[edge['target']] = ""
-              console.log("DEBUG: recursive case printing the next nodes")
-              console.log(nodeToSendOutputs)
               console.log("Printing the edges to be removed")
               console.log(edgeIdToRemove)
               console.log("Printing new seen nodes")
               console.log(newSeenNodes)
             }
-        removeEdgeIDs(edgeIdToRemove, nextSchemaDictionary)
+          }
+        }
         for (let i in roots){
+          console.log("WHY ARE WE FUKCING NOT GOING IN HERE WHAT")
+          let nodeToSendOutputs = {}
           let root = roots[i]
           for (let edgeKey in nextSchemaDictionary['edges']){
             let edge = nextSchemaDictionary['edges'][edgeKey]
@@ -548,20 +551,25 @@ import ActionProvider from './bot/ActionProvider'
               console.log(nodeToSendOutputs)
             }
           }
+          removeEdgeIDs(edgeIdToRemove, nextSchemaDictionary)
           let currentNode = nextSchemaDictionary['nodes'][root]['id']
           let nodePrompt = nextSchemaDictionary['nodes'][root]['data']['prompt']
-          runAPILLM(nodePrompt, contextDict, nextSchemaDictionary=nextSchemaDictionary, seenNodes=newSeenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs)
+          newSeenNodes.push(currentNode)
+          console.log("DEBUG: WHERE ARE MY FUCKING NEWSEENNODES PLEAAAAASE")
+          console.log(newSeenNodes)
+          return(runAPILLM(prompt=nodePrompt, contextDict=contextDict,nextSchemaDictionary=nextSchemaDictionary, seenNodes=newSeenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs))
         }
+        console.log(" NO RETURN EVEN????")
             
           }
           //remove the edge from next schema dictionary wtf are you doing!
           
           //my sins of dynamic typing deserve punishment
-          
+          return(returnDict)
         }
-       return(runSchema(nextSchemaDictionary, seenNodes=newSeenNodes, contextDict=contextDict))
-      }
- }
+       //return(runSchema(nextSchemaDictionary, seenNodes=newSeenNodes, contextDict=contextDict))
+
+ 
 ///END OF RUNSCHEMA FUNCTION
 export default runSchema
 /////
