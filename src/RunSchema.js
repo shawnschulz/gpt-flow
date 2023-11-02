@@ -14,7 +14,10 @@ import ActionProvider from './bot/ActionProvider'
     
     ///START OF Helper functions of runSchema
     function runAPILLM(prompt, contextDict, nextSchemaDictionary, seenNodes, currentNode, schemaDict, divergingLoopStack, WE_ARE_IN_A_LOOP, nodeToSendOutputs, returnDict={"contextDictionary":{}, "ChatBoxList":[]}){
-
+      console.log("We have contextDict right???? Why wouldn't weeeeeee wtf")
+      console.log(contextDict)
+      let contextDictCopy = {}
+      Object.assign(contextDictCopy, contextDict)
       //this is some of the most disgusting code i've ever written. But it just works!
       if (Object.keys(contextDict).length == 0){
         //if the context dict is empty, instantiate it, otherwise add the previous instruction to the context 
@@ -161,19 +164,19 @@ import ActionProvider from './bot/ActionProvider'
             let branched_list = []
             for (let nodeID in nodeToSendOutputs) {
               // have to deal with the tree branching here
-              branched_list.push(runSchema(listedSchemaDict, currentNode=nodeID, seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack, contextDict=contextDict, returnDict=returnDict))
+              runSchema(listedSchemaDict, contextDict=contextDict, currentNode=nodeID, seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack,  returnDict=returnDict)
             }
-            let contextDict = branched_list[-1]["contextDictionary"]
+            let newContextDict = branched_list[-1]["contextDictionary"]
             preFilterList = []
             for (let returnedDict in branched_list) {
-              preFilterList.push(retrunedDict["ChatBoxList"])
+              preFilterList.push(returnedDict["ChatBoxList"])
             }
             let flatList = preFilterList.flat()
             function onlyUnique(value, index, array) {
               return array.indexOf(value) === index;
             }
-            let uniqueList = flastList.filter(onlyUnique)
-            return {"contextDictionary":contextDict, "ChatBoxList":uniqueList}
+            let uniqueList = flatList.filter(onlyUnique)
+            return {"contextDictionary":newContextDict, "ChatBoxList":uniqueList}
           }
 
         }
@@ -525,7 +528,6 @@ import ActionProvider from './bot/ActionProvider'
         roots = roots.concat(orphanedNodes)
         console.log("WHERE ARE MY FUCKING ROOTS WHY ARE THEY JUST GOING AWAY WHAT")
         console.log(roots)
-        let newSeenNodes = seenNodes
         for (let i in roots){
           let root = roots[i]
           for (let edgeKey in nextSchemaDictionary['edges']){
@@ -534,8 +536,6 @@ import ActionProvider from './bot/ActionProvider'
               edgeIdToRemove.push(edge['id'])
               console.log("Printing the edges to be removed")
               console.log(edgeIdToRemove)
-              console.log("Printing new seen nodes")
-              console.log(newSeenNodes)
             }
           }
         }
@@ -554,10 +554,12 @@ import ActionProvider from './bot/ActionProvider'
           removeEdgeIDs(edgeIdToRemove, nextSchemaDictionary)
           let currentNode = nextSchemaDictionary['nodes'][root]['id']
           let nodePrompt = nextSchemaDictionary['nodes'][root]['data']['prompt']
-          newSeenNodes.push(currentNode)
           console.log("DEBUG: WHERE ARE MY FUCKING NEWSEENNODES PLEAAAAASE")
-          console.log(newSeenNodes)
-          return(runAPILLM(prompt=nodePrompt, contextDict=contextDict,nextSchemaDictionary=nextSchemaDictionary, seenNodes=newSeenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs))
+          console.log(seenNodes)
+          seenNodes.push(currentNode)
+
+         
+          return(runAPILLM(prompt=nodePrompt, contextDict=contextDict,nextSchemaDictionary=nextSchemaDictionary, seenNodes=seenNodes, currentNode=currentNode, schemaDict=schemaDict, divergingLoopStack=divergingLoopStack, WE_ARE_IN_A_LOOP=WE_ARE_IN_A_LOOP, nodeToSendOutputs=nodeToSendOutputs))
         }
         console.log(" NO RETURN EVEN????")
             
