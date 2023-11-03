@@ -2,6 +2,9 @@ import ActionProvider from './bot/ActionProvider'
 
 ///START OF RUNSCHEMA FUNCTION
 
+
+// The new plan is to refactor this entire thing FUUUUUUUUUuCK
+// when we refactor just start with the non loop cases and don't worry about implementing loop cases yet
  async function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider, WE_ARE_IN_A_LOOP=false, returnDict={"contextDictionary":{}, "ChatBoxList":[]}) {
     console.log("inside runSchema")
     console.log(listedSchemaDict)
