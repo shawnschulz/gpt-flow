@@ -1,23 +1,23 @@
-import ActionProvider from './bot/ActionProvider'
-
+export default runSchema
 ///START OF RUNSCHEMA FUNCTION
 
 
 // The new plan is to refactor this entire thing FUUUUUUUUUuCK
 // when we refactor just start with the non loop cases and don't worry about implementing loop cases yet
- async function runSchema(listedSchemaDict) {
+ export function runSchema(listedSchemaDict) {
       async function sendDictionaryAndProcess(listedSchemaDict) {
         try {
+	  let json_string = JSON.stringify(listedSchemaDict)
           const response = await fetch('http://127.0.0.1:4269/schema_json_handler', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: listedSchemaDict
+            body: json_string
           }
           );
           if(!response.ok) {
-            throw new Error('HTTP error! status ${response.status}');
+            throw new Error(`HTTP error! status ${response.status}`);
           }
           const result = await response.json();
           return result;
