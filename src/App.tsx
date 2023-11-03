@@ -72,11 +72,11 @@ function Flow() {
     link.click();
   }
   const [getMessage, setGetMessage] = useState({})
-  function runFlowButton(data) {
+  async function runFlowButton(data) {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    console.log(runSchema(data))
+    console.log(await runSchema(data))
     // need to call backend API somehow to send the schema to python script
 
   }
