@@ -4,7 +4,7 @@ export default runSchema
 
 // The new plan is to refactor this entire thing FUUUUUUUUUuCK
 // when we refactor just start with the non loop cases and don't worry about implementing loop cases yet
- export function runSchema(listedSchemaDict) {
+ export async function runSchema(listedSchemaDict) {
       async function sendDictionaryAndProcess(listedSchemaDict) {
         try {
 	  let json_string = JSON.stringify(listedSchemaDict)
@@ -25,6 +25,8 @@ export default runSchema
           console.error('There was a problem running the schema through graph traversal:', error)
         }
       }
+      let return_dictionary = await sendDictionaryAndProcess(listedSchemaDict);
+      return(return_dictionary)
       sendDictionaryAndProcess(listedSchemaDict).then(
         //This promise is absolutely disgusting, but I messed up the recursive logic so it's the only way to
         //only do execution once we get the LLM output

@@ -76,10 +76,14 @@ function Flow() {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
-    console.log(await runSchema(data))
     // need to call backend API somehow to send the schema to python script
-
-  }
+ 	async function runAPIandFUCKINGWAIT(data) {
+		return(runSchema(data));
+	}
+	const returnValue = await runAPIandFUCKINGWAIT(data);
+	console.log(returnValue);
+	return returnValue;
+ }
  
  const onRestore = (selectedFile) =>{
   //this function uses the set functions to restore flow from an uploaded file, 
