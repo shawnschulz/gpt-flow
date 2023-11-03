@@ -2,9 +2,11 @@ import ActionProvider from './bot/ActionProvider'
 
 ///START OF RUNSCHEMA FUNCTION
 
- function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider, WE_ARE_IN_A_LOOP=false, returnDict={"contextDictionary":{}, "ChatBoxList":[]}) {
+ async function runSchema(listedSchemaDict, nextNodeInLoop = "start", receivedInput = "", divergingLoopStack = [], seenNodes = [], contextDict = {}, actionProvider=ActionProvider, WE_ARE_IN_A_LOOP=false, returnDict={"contextDictionary":{}, "ChatBoxList":[]}) {
     console.log("inside runSchema")
     console.log(listedSchemaDict)
+    console.log("heres the seennodes")
+    console.log(seenNodes)
     //This will be a very large function that runs clientside, traversing graph with correct logic for loops
     //Should do an api call to ask for LLM output when needed
     // I am way too lazy but this whole funciton really should be in
@@ -13,7 +15,7 @@ import ActionProvider from './bot/ActionProvider'
     //if performance is rlly bad may want to convert nodes/edges to a dictionary first
     
     ///START OF Helper functions of runSchema
-    function runAPILLM(prompt, contextDict, nextSchemaDictionary, seenNodes, currentNode, schemaDict, divergingLoopStack, WE_ARE_IN_A_LOOP, nodeToSendOutputs, returnDict={"contextDictionary":{}, "ChatBoxList":[]}){
+    async function runAPILLM(prompt, contextDict, nextSchemaDictionary, seenNodes, currentNode, schemaDict, divergingLoopStack, WE_ARE_IN_A_LOOP, nodeToSendOutputs, returnDict={"contextDictionary":{}, "ChatBoxList":[]}){
       console.log("We have contextDict right???? Why wouldn't weeeeeee wtf")
       console.log(contextDict)
       let contextDictCopy = {}
@@ -60,7 +62,7 @@ import ActionProvider from './bot/ActionProvider'
       sendDictionaryAndProcess(contextAddedPrompt).then(
         //This promise is absolutely disgusting, but I messed up the recursive logic so it's the only way to
         //only do execution once we get the LLM output
-        processedData => {
+        async processedData => {
 
           let LLMRecord = processedData
           console.log("DEBUG: here's the llmrecord")
@@ -149,34 +151,49 @@ import ActionProvider from './bot/ActionProvider'
               }
             }
           }
+          else if (Object.keys(nodeToSendOutputs).length == 0) {
+              return(returnDict)
+          }
           else {
 
             console.log("WE ARE NOT IN A LOOP")
 
             //construct dictionary of nodes and outputs being sent to them
             // may need to enforce checking of key existence
-            for (let nodeIDKey in nodeToSendOutputs){
-              nodeToSendOutputs[nodeIDKey] = output
-            }
-            //in the future may want to change way script handles combining prompts
-            let updatedPromptsDict = updateNodePrompts(nodeToSendOutputs, nextSchemaDictionary)
-            let listedSchemaDict = schemaDictToList(updatedPromptsDict)
-            let branched_list = []
-            for (let nodeID in nodeToSendOutputs) {
-              // have to deal with the tree branching here
-              runSchema(listedSchemaDict, contextDict=contextDict, currentNode=nodeID, seenNodes=seenNodes, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack,  returnDict=returnDict)
-            }
-            let newContextDict = branched_list[-1]["contextDictionary"]
-            preFilterList = []
-            for (let returnedDict in branched_list) {
-              preFilterList.push(returnedDict["ChatBoxList"])
-            }
-            let flatList = preFilterList.flat()
-            function onlyUnique(value, index, array) {
-              return array.indexOf(value) === index;
-            }
-            let uniqueList = flatList.filter(onlyUnique)
-            return {"contextDictionary":newContextDict, "ChatBoxList":uniqueList}
+            
+              for (let nodeIDKey in nodeToSendOutputs){
+                nodeToSendOutputs[nodeIDKey] = output
+              }
+              let updatedPromptsDict = updateNodePrompts(nodeToSendOutputs, nextSchemaDictionary)
+              let listedSchemaDict = schemaDictToList(updatedPromptsDict)
+              let branched_list = []
+              console.log(nodeToSendOutputs)
+              console.log("seen nodes before putting into runschema")
+              console.log(seenNodes)
+              for ( let nodeIDKey in nodeToSendOutputs) {
+                  // have to deal with the tree branching her
+                  let nodeID = nodeToSendOutputs[nodeIDKey]
+                  console.log("here's the noteID")
+                  console.log(nodeID)
+                  // i hate javascript :(
+                  const result =  await runSchema(listedSchemaDict,  seenNodes=seenNodes, nextNodeInLoop=nodeID, receivedInput=nextReceivedInput, divergingLoopStack=divergingLoopStack,  returnDict=returnDict)
+                  branched_list.push(result)
+              } 
+              
+              //in the future may want to change way script handles combining prompts
+
+              let newContextDict = branched_list[-1]["contextDictionary"]
+              preFilterList = []
+              for (let returnedDict in branched_list) {
+                preFilterList.push(returnedDict["ChatBoxList"])
+              }
+              let flatList = preFilterList.flat()
+              function onlyUnique(value, index, array) {
+                return array.indexOf(value) === index;
+              }
+              let uniqueList = flatList.filter(onlyUnique)
+              return(uniqueList)
+
           }
 
         }
