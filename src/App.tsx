@@ -77,11 +77,15 @@ function Flow() {
     //or just do what the download button does idk
     
     // need to call backend API somehow to send the schema to python script
- 	async function runAPIandFUCKINGWAIT(data) {
+ 	async function runAPI(data) {
 		return(runSchema(data));
 	}
-	const returnValue = await runAPIandFUCKINGWAIT(data);
+	const returnValue = await runAPI(data);
 	console.log(returnValue);
+	let chatLogOutputList = returnValue['output_text']
+	for (const chatMessage of chatLogOutputList){
+		createChatBotMessage(chatMessage);
+	}
 	return returnValue;
  }
  
