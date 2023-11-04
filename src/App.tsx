@@ -16,9 +16,8 @@ import { shallow } from 'zustand/shallow';
 import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
-import ActionProvider from './bot/ActionProvider';
-import setChatbotMessage from './bot/ActionProvider';
-import MessageParser from './bot/MessageParser';
+import ActionProvider from './bot/ActionProvider.js';
+import MessageParser from './bot/MessageParser.js';
 import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
@@ -85,8 +84,7 @@ function Flow() {
 	console.log(returnValue);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
-		createChatBotMessage(chatMessage);
-        setChatbotMessage(chatMessage);
+		props.actionProvider.createChatBotMessage(chatMessage);
 	}
 	return returnValue;
  }
