@@ -1,23 +1,20 @@
+import { promptOneMessage } from "../RunSchema";
+
 class MessageParser {
   constructor(actionProvider, state) {
     this.actionProvider = actionProvider;
     this.state = state;
   }
 
+    // When message entered, need to get value by calling promptOneMessage from RunSchema, awaiting for the result,
+        // then use actionprovider to render the message
   parse(message) {
-    console.log(message)
+
+    const llmOutput = promptOneMessage(message)
+    this.actionProvider.outputText(llmOutput)
+
   }
-  // Want to take this message and the use post to do an API call to run the LLM on it as a prompt
-  // axios.post('/user', {
-  //   firstName: 'Fred',
-  //   lastName: 'Flintstone'
-  // })
-  // .then(function (response) {
-  //   console.log(response);
-  // })
-  // .catch(function (error) {
-  //   console.log(error);
-  // });
 }
+
 
 export default MessageParser;

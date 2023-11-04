@@ -24,7 +24,6 @@ import './App.css'
 import axios from 'axios'
 import './RunSchema.js'
 import runSchema from './RunSchema.js';
-
 //Change this to use the api later
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
