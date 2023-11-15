@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import 'reactflow/dist/style.css';
 import ReactFlow, {
   Controls,
@@ -11,7 +11,6 @@ import { useState } from 'react';
 import TextInputNode from './TextInputNode';
 import Chatbot, { createChatBotMessage } from 'react-chatbot-kit'
 import './TextInputNodeStyle.css';
-
 import { shallow } from 'zustand/shallow';
 import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
@@ -50,6 +49,8 @@ const nodeTypes = { textInput: TextInputNode };
 const initialEdges = [];
 
 function Flow() {
+  const actionProviderRef = useRef(new ActionProvider());
+
   const { nodes, onNodesChange, setNodes, getNodes, addChildNode } = useStore(selector, shallow);
   
   //is this necessary anymore?
@@ -70,12 +71,10 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
-  const [getMessage, setGetMessage] = useState({})
-  async function runFlowButton(data) {
-    //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
-    //or just do what the download button does idk
-    
-    // need to call backend API somehow to send the schema to python script
+ 
+  const [getMessage, setGetMessage] = useState({ActionProvider})
+  let sharedActionProvider = new ActionProvider
+  async function runFlowButton (data)  {
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
@@ -83,13 +82,13 @@ function Flow() {
 	console.log(returnValue);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
-		props.actionProvider.createChatBotMessage(chatMessage);
-	}
+        //our last task pretty much, need to somehow get these chatMessages to output to a component
+        setGetMessage(chatMessage)
+    }
 	return returnValue;
  }
  
  const onRestore = (selectedFile) =>{
-  //this function uses the set functions to restore flow from an uploaded file, 
   //TODO: put setEdges in store.ts as well, i'm still using the one defined here for no reason.
   if (selectedFile){
     const flow = JSON.parse(selectedFile);
@@ -109,49 +108,9 @@ function Flow() {
   
  }
 
-
-  //stuff for copy pasting nodes
-
-
-  // const [ctrlState, setCtrlState] = useState('');
-
-  //   useEffect(() => {
-  //     const handleKeyDown = (event) => {
-  //       event.preventDefault();
-  //       const code = event.which || event.keyCode;
-
-  //       let charCode = String.fromCharCode(code).toLowerCase();
-  //       if ((event.shiftKey || event.metaKey) && charCode === 's') {
-  //         setCtrlState('CTRL+S');
-  //      //   downloadJsonButton({nodes: nodes, edges: edges});
-  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'c') {
-  //      //   setCtrlState('SHIFT+C');
-          
-  //         for (var i =0; i < edges.length; i++){
-  //           alert(JSON.stringify(edges[i]))
-  //           if (edges[i]['selected']){
-  //             alert("node is selected")
-  //           }
-  //         }
-  //       //  alert('SHIFT C')
-  //         const selectedElements = useStoreState((store) => store.selectedElements);
-
-  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'v') {
-  //         setCtrlState('SHIFT+V');
-  //      //   alert('SHIFT+V Pressed');
-  //       }
-  //     };
-
-  //     window.addEventListener('keydown', handleKeyDown);
-
-  //     return () => window.removeEventListener('keydown', handleKeyDown);
-  //   }, []);
-  //
   const [selectedFile, setSelectedFile] = useState();
 
   const handleFileVariable = (e) => {
-    //gets the file from the upload button and turns it to a string, which then gets parsed into JSON
-    //I'm not actually sure why JSON.stringify or JSON.parse didn't work to start, but this makes it work now
       const fileReader = new FileReader();
       fileReader.readAsText(e.target.files[0], "UTF-8");
       fileReader.onload = e => {
@@ -161,7 +120,6 @@ function Flow() {
      };
 
   // API calls for communication with backend
-
 
   const testBackend = () => {
     axios.get('http://127.0.0.1:5000/flask/hello').then(response => {
@@ -228,7 +186,7 @@ function Flow() {
       
       <Chatbot  
         config={config} 
-        actionProvider={ActionProvider} 	    
+        actionProvider={ActionProvider}
         messageParser={MessageParser} 
       />
 

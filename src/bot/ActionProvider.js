@@ -5,6 +5,7 @@ class ActionProvider {
     createClientMessage,
     stateRef,
     createCustomMessage,
+    outputText,
     ...rest
   ) {
     this.createChatBotMessage = createChatBotMessage;
@@ -12,9 +13,10 @@ class ActionProvider {
     this.createClientMessage = createClientMessage;
     this.stateRef = stateRef;
     this.createCustomMessage = createCustomMessage;
+    this.outputText = outputText;
   }
 
-  outputText = (text) => {
+ outputText = (text) => {
     const message = this.createChatBotMessage(text)
     this.addMessageToState(message)
   }
