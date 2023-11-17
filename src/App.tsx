@@ -148,7 +148,7 @@ function Flow() {
           </div>
           
           <div style = {{float: 'left'}}>
-            <a href="http://localhost:5173/about" target="_blank" rel="noopener noreferrer">
+            <a href="/about" target="_blank" rel="noopener noreferrer">
               <img src={shblog_icon} style= {{width: 40, height: 40, position: 'relative', left: 2}}/>
             </a>
           </div>

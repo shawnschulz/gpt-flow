@@ -8,6 +8,8 @@ import {
 } from "react-router-dom"
 import ErrorPage from './ErrorPage.tsx'
 import AboutPage from './routes/about.tsx'
+import ActionProvider from './bot/ActionProvider.js';
+import MessageParser from './bot/MessageParser.js';
 const router = createBrowserRouter([
     {
         path: "/",

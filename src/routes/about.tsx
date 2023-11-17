@@ -12,16 +12,16 @@ export default function about() {
     <div>
       <div style={{ width: '100vw', height: '96vh' }}>
       <div className="landing-info-container">
-          <i> Hello and welcome to my website! I'm Shawn, a computational biologist and data scientist. </i>
+          <i> Hello and welcome to my website! I'm Shawn, a computational biologist and data scientist. Click on one of the icons below to check out the projects I'm working on!</i>
       </div>
       <div className="project-icons-container">
-        <a href="http://localhost:5173/shblog" target="_blank" rel="noopener noreferrer">
+        <a href="/shblog" target="_blank" rel="noopener noreferrer">
         <img src={shblog_icon} style= {{width: 220, height: 220, position: 'relative', left: 1}}/>
         </a>
-        <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer">
+        <a href="/" target="_blank" rel="noopener noreferrer">
           <img src={gpt_flow_icon} style= {{width: 220, height: 220, position: 'relative', left: 1}}/>
         </a>
-        <a href="http://localhost:5173/gene_info_calculator" target="_blank" rel="noopener noreferrer">
+        <a href="/gene_info_calculator" target="_blank" rel="noopener noreferrer">
           <img src={gene_info_icon} style= {{width: 220, height: 220, position: 'relative', left: 1}}/>
         </a>
         <a href="https://bankerz.itch.io/" target="_blank" rel="noopener noreferrer">
