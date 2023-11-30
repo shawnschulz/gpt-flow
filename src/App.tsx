@@ -9,7 +9,7 @@ import ReactFlow, {
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
-import Chatbot, { createChatBotMessage } from 'react-chatbot-kit'
+import Chatbot, { createChatBotMessage, createCustomMessage, createClientMessage } from 'react-chatbot-kit'
 import './TextInputNodeStyle.css';
 
 import { shallow } from 'zustand/shallow';
@@ -70,20 +70,19 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
-  const [getMessage, setGetMessage] = useState({})
   async function runFlowButton(data) {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
     // need to call backend API somehow to send the schema to python script
+    console.log(ActionProvider.createChatBotMessage)
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
 	const returnValue = await runAPI(data);
-	console.log(returnValue);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
-		props.actionProvider.createChatBotMessage(chatMessage);
+		ActionProvider.createChatBotMessage(chatMessage);
 	}
 	return returnValue;
  }
