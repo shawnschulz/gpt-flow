@@ -8,6 +8,7 @@ export default runSchema
 	  let json_string = JSON.stringify(listedSchemaDict)
           const response = await fetch('http://127.0.0.1:4269/schema_json_handler', {
             method: 'POST',
+            cache: "no-store",
             headers: {
               'Content-Type': 'application/json',
             },

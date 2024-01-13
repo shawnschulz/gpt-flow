@@ -9,7 +9,6 @@ import ReactFlow, {
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
-import Chatbot, { createChatBotMessage, createCustomMessage, createClientMessage } from 'react-chatbot-kit'
 import './TextInputNodeStyle.css';
 
 import { shallow } from 'zustand/shallow';
@@ -18,6 +17,7 @@ import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
 import ActionProvider from './bot/ActionProvider.js';
 import MessageParser from './bot/MessageParser.js';
+import Chatbot from './ChatBotContainer.jsx';
 import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
@@ -28,6 +28,7 @@ import runSchema from './RunSchema.js';
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
+import drawElement from './ChatBotContainer.jsx';
 //
 
 const selector = (state: RFState) => ({
@@ -70,20 +71,41 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
+
+  const chatMessages = document.querySelector('.chat-messages')
+    var message = {
+        sender:"you",
+        text:""
+    }
+  const chatMessageElement = (message) => `
+    <div class="message usr-bg">
+        <b class="message-sender">${message.sender}</b>
+        <div class="message-text">${message.text}</div>
+    </div>
+  `
+  function drawElement(sender: string, text: string){
+        message = {
+            sender: sender,
+            text: text,
+        }
+      const new_element = chatMessageElement(message)
+      chatMessages.innerHTML += new_element
+  }
   async function runFlowButton(data) {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
     //or just do what the download button does idk
     
     // need to call backend API somehow to send the schema to python script
-    console.log(ActionProvider.createChatBotMessage)
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
+    console.log(Chatbot)
 	const returnValue = await runAPI(data);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
-		ActionProvider.createChatBotMessage(chatMessage);
+		drawElement("shbot", chatMessage);
 	}
+
 	return returnValue;
  }
  
@@ -225,11 +247,7 @@ function Flow() {
 
     <div className="myComponent">
       
-      <Chatbot  
-        config={config} 
-        actionProvider={ActionProvider} 	    
-        messageParser={MessageParser} 
-      />
+      <Chatbot/>
 
     </div>
       
