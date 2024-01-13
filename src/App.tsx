@@ -60,6 +60,7 @@ function Flow() {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   
+  var messageHistory = {};
 ////Buttons////
   function downloadJsonButton(dictionary) { 
       //This just turns dictionary style objects itno a json and then downloads it
@@ -69,6 +70,15 @@ function Flow() {
     const link = document.createElement("a");
     link.href = url;
     link.download = "gpt_flow_schema.json";
+    link.click();
+  }
+  function downloadMessageHistory (){
+      let historyJSON = JSON.stringify(messageHistory)
+    const blob = new Blob([historyJSON], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "gpt_flow_chat_history.json";
     link.click();
   }
 
@@ -90,6 +100,10 @@ function Flow() {
         }
       const new_element = chatMessageElement(message)
       chatMessages.innerHTML += new_element
+      const d = new Date()
+      let time = d.getTime()
+      let uniqueMessageId = time + "_" + sender
+      messageHistory[uniqueMessageId] = text
   }
   async function runFlowButton(data) {
     //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
@@ -130,44 +144,6 @@ function Flow() {
   
  }
 
-
-  //stuff for copy pasting nodes
-
-
-  // const [ctrlState, setCtrlState] = useState('');
-
-  //   useEffect(() => {
-  //     const handleKeyDown = (event) => {
-  //       event.preventDefault();
-  //       const code = event.which || event.keyCode;
-
-  //       let charCode = String.fromCharCode(code).toLowerCase();
-  //       if ((event.shiftKey || event.metaKey) && charCode === 's') {
-  //         setCtrlState('CTRL+S');
-  //      //   downloadJsonButton({nodes: nodes, edges: edges});
-  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'c') {
-  //      //   setCtrlState('SHIFT+C');
-          
-  //         for (var i =0; i < edges.length; i++){
-  //           alert(JSON.stringify(edges[i]))
-  //           if (edges[i]['selected']){
-  //             alert("node is selected")
-  //           }
-  //         }
-  //       //  alert('SHIFT C')
-  //         const selectedElements = useStoreState((store) => store.selectedElements);
-
-  //       } else if ((event.shiftKey || event.metaKey) && charCode === 'v') {
-  //         setCtrlState('SHIFT+V');
-  //      //   alert('SHIFT+V Pressed');
-  //       }
-  //     };
-
-  //     window.addEventListener('keydown', handleKeyDown);
-
-  //     return () => window.removeEventListener('keydown', handleKeyDown);
-  //   }, []);
-  //
   const [selectedFile, setSelectedFile] = useState();
 
   const handleFileVariable = (e) => {
@@ -221,7 +197,7 @@ function Flow() {
           </div>
 
           <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+            <button onclick={() => runflowbutton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
 
       
@@ -246,7 +222,9 @@ function Flow() {
 
 
     <div className="myComponent">
-      
+      <div style={{float: 'right', position: 'relative'}}>
+        <button onClick={downloadMessageHistory}>Download History</button>
+      </div>
       <Chatbot/>
 
     </div>
