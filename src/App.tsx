@@ -15,21 +15,17 @@ import { shallow } from 'zustand/shallow';
 import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
-import ActionProvider from './bot/ActionProvider.js';
-import MessageParser from './bot/MessageParser.js';
 import Chatbot from './ChatBotContainer.jsx';
-import config from './bot/Config';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
 import axios from 'axios'
 import './RunSchema.js'
 import runSchema from './RunSchema.js';
+import promptOneMessage from './RunSchema.js';
 //Change this to use the api later
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
-import drawElement from './ChatBotContainer.jsx';
-//
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -82,6 +78,10 @@ function Flow() {
     link.click();
   }
 
+
+  const [chatInputMessage, setChatInputMessage] = useState("");
+  const [savedMessage, setSavedMessage] = useState("");
+  const [inputText, setInputText] = useState("");
   const chatMessages = document.querySelector('.chat-messages')
     var message = {
         sender:"you",
@@ -93,6 +93,24 @@ function Flow() {
         <div class="message-text">${message.text}</div>
     </div>
   `
+
+  function changeText(event) {
+      setInputText(event.target.value);
+  }
+
+  async function sendMessage(e) {
+    e.preventDefault();
+    console.log(inputText);
+    drawElement("you", inputText);
+    setSavedMessage(inputText);
+    setInputText("");
+    async function tempRunAPI(data) {
+        return(promptOneMessage(data));
+    }
+    const outputDict = await tempRunAPI({"prompt":inputText});
+    drawElement("shbot", outputDict["response"]);    
+  }
+
   function drawElement(sender: string, text: string){
         message = {
             sender: sender,
@@ -197,7 +215,7 @@ function Flow() {
           </div>
 
           <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onclick={() => runflowbutton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
 
       
@@ -225,8 +243,43 @@ function Flow() {
       <div style={{float: 'right', position: 'relative'}}>
         <button onClick={downloadMessageHistory}>Download History</button>
       </div>
-      <Chatbot/>
 
+    <div> 
+        <head>
+            <meta charSet='UTF-8'/>
+            <meta name = 'viewport' content="width=device-width, initial-scale=1.0"/>
+            <title> GPT-Flow </title>
+            <link rel='stylesheet' href="style.css" />
+        </head>
+        <body>
+            <div class="chat-container"> 
+                <h2 class="chat-header">GPT-flow chatbot...</h2>
+            <div class="chat-messages">
+                <div class="message usr-bg">
+                    <b class="message-sender">shbot</b>
+                    <div class="message-text">Welcome to GPT Flow!</div>
+                </div>
+                <div class="mesage usr-bg">
+                    <b class="message-sender">shbot</b>
+                    <div class="message-text">You can type your prompt into the input below. Outputs from the flow chart will appear here automatically.</div>
+                </div>
+            </div>
+            <form class="chat_input">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    onChange={changeText}
+                    value={inputText}
+                    required placeholder="Type here..."/>
+                <button 
+                    type="submit" 
+                    onClick={sendMessage}
+                    class="button send-button">Send</button>
+            </form>
+              <script src="App.tsx"></script>
+            </div>
+        </body>
+    </div>
     </div>
       
 
