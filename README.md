@@ -24,6 +24,7 @@ cd gpt-flow-backend
 pip -r install requirements.txt
 python app.py 
 ```
+Getting the backend to work on your local system will require editing app.py. Go to the "ask_alpaca" function and change the model_path argument to a valid .ggml or .gguf file stored on your local system
 
 TODOs
 
