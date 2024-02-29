@@ -39,17 +39,15 @@ TODOs
 
 ~~6. Rebase experimental branch to new main branch~~
 
-7. Add regular chatbot functionality to text output screen
+~~7. Add regular chatbot functionality to text output screen~~
 
-8. Add way to handle graph traversal on front end so API calls to LLM can be outputted to frontend each call
+~~8. Add way to handle graph traversal on front end so API calls to LLM can be outputted to frontend each call~~
 
-9.  Set up apache server and publish
+9. Create AWS hosted website for flow-chart
 
-10. Change edge behavior such that source/target is not based on what side of node it's on but rather on where edge was dragged from, add visual indicator for what direction edge is pointing
+10. Improve selection of nodes, add some hotkey for drag select, allow shift clicking to select mutliple nodes, make visual indicator that node is selected
 
-11. Improve selection of nodes, add some hotkey for drag select, allow shift clicking to select mutliple nodes, make visual indicator that node is selected
-
-12. Incorporate hf agents, add new types of nodes such as text-image image-text text-text and nodes that are capable of running python code 
+11. Incorporate hf agents, add new types of nodes such as text-image image-text text-text and nodes that are capable of running python code 
 
 13. Add option to use chatgpt api key
 
