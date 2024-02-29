@@ -9,25 +9,22 @@ import ReactFlow, {
 import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
-import Chatbot, { createChatBotMessage } from 'react-chatbot-kit'
 import './TextInputNodeStyle.css';
 import { shallow } from 'zustand/shallow';
 import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
 import {useStoreApi} from 'reactflow'
-import ActionProvider from './bot/ActionProvider.js';
-import MessageParser from './bot/MessageParser.js';
-import config from './bot/Config';
+import Chatbot from './ChatBotContainer.jsx';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
 import axios from 'axios'
 import './RunSchema.js'
 import runSchema from './RunSchema.js';
+import promptOneMessage from './RunSchema.js';
 //Change this to use the api later
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
-//
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -60,6 +57,7 @@ function Flow() {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   
+  var messageHistory = {};
 ////Buttons////
   function downloadJsonButton(dictionary) { 
       //This just turns dictionary style objects itno a json and then downloads it
@@ -71,20 +69,80 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
- 
-  const [getMessage, setGetMessage] = useState({ActionProvider})
-  let sharedActionProvider = new ActionProvider
-  async function runFlowButton (data)  {
+
+  function downloadMessageHistory (){
+      let historyJSON = JSON.stringify(messageHistory)
+    const blob = new Blob([historyJSON], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "gpt_flow_chat_history.json";
+    link.click();
+  }
+
+
+  const [chatInputMessage, setChatInputMessage] = useState("");
+  const [savedMessage, setSavedMessage] = useState("");
+  const [inputText, setInputText] = useState("");
+  const chatMessages = document.querySelector('.chat-messages')
+    var message = {
+        sender:"you",
+        text:""
+    }
+  const chatMessageElement = (message) => `
+    <div class="message usr-bg">
+        <b class="message-sender">${message.sender}</b>
+        <div class="message-text">${message.text}</div>
+    </div>
+  `
+
+  function changeText(event) {
+      setInputText(event.target.value);
+  }
+
+  async function sendMessage(e) {
+    e.preventDefault();
+    console.log(inputText);
+    drawElement("you", inputText);
+    setSavedMessage(inputText);
+    setInputText("");
+    async function tempRunAPI(data) {
+        return(promptOneMessage(data));
+    }
+    const outputDict = await tempRunAPI({"prompt":inputText});
+    drawElement("shbot", outputDict["response"]);    
+  }
+
+  function drawElement(sender: string, text: string){
+        message = {
+            sender: sender,
+            text: text,
+        }
+      const new_element = chatMessageElement(message)
+      chatMessages.innerHTML += new_element
+      const d = new Date()
+      let time = d.getTime()
+      let uniqueMessageId = time + "_" + sender
+      messageHistory[uniqueMessageId] = text
+  }
+  async function runFlowButton(data) {
+    //once i get the backend set up can use "getNodes()" and another function to getEdges to send info to the backend
+    //or just do what the download button does idk
+    
+    // need to call backend API somehow to send the schema to python script
+
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
+    console.log(Chatbot)
 	const returnValue = await runAPI(data);
-	console.log(returnValue);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
-        //our last task pretty much, need to somehow get these chatMessages to output to a component
-        setGetMessage(chatMessage)
-    }
+
+		drawElement("shbot", chatMessage);
+	}
+
+
 	return returnValue;
  }
  
@@ -183,12 +241,46 @@ function Flow() {
 
 
     <div className="myComponent">
-      
-      <Chatbot  
-        config={config} 
-        actionProvider={ActionProvider}
-        messageParser={MessageParser} 
-      />
+      <div style={{float: 'right', position: 'relative'}}>
+        <button onClick={downloadMessageHistory}>Download History</button>
+      </div>
+
+    <div> 
+        <head>
+            <meta charSet='UTF-8'/>
+            <meta name = 'viewport' content="width=device-width, initial-scale=1.0"/>
+            <title> GPT-Flow </title>
+            <link rel='stylesheet' href="style.css" />
+        </head>
+        <body>
+            <div class="chat-container"> 
+                <h2 class="chat-header">GPT-flow chatbot...</h2>
+            <div class="chat-messages">
+                <div class="message usr-bg">
+                    <b class="message-sender">shbot</b>
+                    <div class="message-text">Welcome to GPT Flow!</div>
+                </div>
+                <div class="mesage usr-bg">
+                    <b class="message-sender">shbot</b>
+                    <div class="message-text">You can type your prompt into the input below. Outputs from the flow chart will appear here automatically.</div>
+                </div>
+            </div>
+            <form class="chat_input">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    onChange={changeText}
+                    value={inputText}
+                    required placeholder="Type here..."/>
+                <button 
+                    type="submit" 
+                    onClick={sendMessage}
+                    class="button send-button">Send</button>
+            </form>
+              <script src="App.tsx"></script>
+            </div>
+        </body>
+    </div>
 
     </div>
       

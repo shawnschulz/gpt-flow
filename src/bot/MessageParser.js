@@ -8,8 +8,10 @@ class MessageParser {
     // When message entered, need to get value by calling promptOneMessage from RunSchema, awaiting for the result,
         // then use actionprovider to render the message
   parse(message) {
+
     let promptDict = {'prompt':message}
     promptOneMessage(promptDict).then(res => this.actionProvider.outputText(res))
+
 
   }
 }
@@ -32,11 +34,11 @@ class MessageParser {
           const result = await response.json();
           return result;
         } catch (error) {
-          console.error('There was a problem running the schema through graph traversal:', error)
+          console.error('There was a problem running the schema through graph traversal: ', error)
         }
       }
       let return_dictionary = await sendDictionaryAndProcess(listedSchemaDict);
-     console.log("Prompting successful, here was the result:" + return_dictionary["Response"])
+     console.log("Prompting successful, here was the result: " + return_dictionary["Response"])
       return(return_dictionary["Response"])
  }
 
