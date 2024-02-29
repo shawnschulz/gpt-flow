@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import 'reactflow/dist/style.css';
 import ReactFlow, {
   Controls,
@@ -10,7 +10,6 @@ import { useState } from 'react';
 
 import TextInputNode from './TextInputNode';
 import './TextInputNodeStyle.css';
-
 import { shallow } from 'zustand/shallow';
 import {ReactFlowProvider} from 'reactflow'
 import useStore, { RFState } from '../store';
@@ -47,6 +46,8 @@ const nodeTypes = { textInput: TextInputNode };
 const initialEdges = [];
 
 function Flow() {
+  const actionProviderRef = useRef(new ActionProvider());
+
   const { nodes, onNodesChange, setNodes, getNodes, addChildNode } = useStore(selector, shallow);
   
   //is this necessary anymore?
@@ -68,6 +69,7 @@ function Flow() {
     link.download = "gpt_flow_schema.json";
     link.click();
   }
+
   function downloadMessageHistory (){
       let historyJSON = JSON.stringify(messageHistory)
     const blob = new Blob([historyJSON], { type: "text/plain;charset=utf-8" });
@@ -128,6 +130,7 @@ function Flow() {
     //or just do what the download button does idk
     
     // need to call backend API somehow to send the schema to python script
+
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
@@ -135,14 +138,15 @@ function Flow() {
 	const returnValue = await runAPI(data);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
+
 		drawElement("shbot", chatMessage);
 	}
+
 
 	return returnValue;
  }
  
  const onRestore = (selectedFile) =>{
-  //this function uses the set functions to restore flow from an uploaded file, 
   //TODO: put setEdges in store.ts as well, i'm still using the one defined here for no reason.
   if (selectedFile){
     const flow = JSON.parse(selectedFile);
@@ -165,8 +169,6 @@ function Flow() {
   const [selectedFile, setSelectedFile] = useState();
 
   const handleFileVariable = (e) => {
-    //gets the file from the upload button and turns it to a string, which then gets parsed into JSON
-    //I'm not actually sure why JSON.stringify or JSON.parse didn't work to start, but this makes it work now
       const fileReader = new FileReader();
       fileReader.readAsText(e.target.files[0], "UTF-8");
       fileReader.onload = e => {
@@ -176,7 +178,6 @@ function Flow() {
      };
 
   // API calls for communication with backend
-
 
   const testBackend = () => {
     axios.get('http://127.0.0.1:5000/flask/hello').then(response => {
@@ -205,7 +206,7 @@ function Flow() {
           </div>
           
           <div style = {{float: 'left'}}>
-            <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer">
+            <a href="/about" target="_blank" rel="noopener noreferrer">
               <img src={shblog_icon} style= {{width: 40, height: 40, position: 'relative', left: 2}}/>
             </a>
           </div>
@@ -280,6 +281,7 @@ function Flow() {
             </div>
         </body>
     </div>
+
     </div>
       
 

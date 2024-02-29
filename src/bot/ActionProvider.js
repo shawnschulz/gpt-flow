@@ -16,7 +16,7 @@ class ActionProvider {
     this.outputText = outputText;
   }
 
-  outputText = (text) => {
+ outputText = (text) => {
     const message = this.createChatBotMessage(text)
     this.addMessageToState(message)
   }

@@ -1,0 +1,19 @@
+.landing-info-container {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.project-icons-container {
+  display: flex;
+  flex: 2;
+  justify-content: center;
+  flex-direction: row;
+}
+.social-media-container{
+  display: flex;
+  flex: 2;
+  justify-content: center;
+  flex-direction: row;
+}
