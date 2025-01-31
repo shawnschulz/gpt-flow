@@ -8,8 +8,6 @@ import {
 } from "react-router-dom"
 import ErrorPage from './ErrorPage.tsx'
 import AboutPage from './routes/about.tsx'
-import ActionProvider from './bot/ActionProvider.js';
-import MessageParser from './bot/MessageParser.js';
 const router = createBrowserRouter([
     {
         path: "/",
@@ -25,5 +23,6 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router = {router}/>
+    <router path="/about" element={<iframe title="home_page" src="/home_page.html" />} />
   </React.StrictMode>,
 )

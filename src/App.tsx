@@ -46,7 +46,6 @@ const nodeTypes = { textInput: TextInputNode };
 const initialEdges = [];
 
 function Flow() {
-  const actionProviderRef = useRef(new ActionProvider());
 
   const { nodes, onNodesChange, setNodes, getNodes, addChildNode } = useStore(selector, shallow);
   

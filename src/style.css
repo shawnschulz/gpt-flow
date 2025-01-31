@@ -1,0 +1,6 @@
+.chat-messages{
+    height:23em;
+    overflow-y: scroll;
+    flex: 1 0;
+    height:70vh;
+}
