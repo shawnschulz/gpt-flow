@@ -25,6 +25,9 @@ import promptOneMessage from './RunSchema.js';
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
+import ChatBot from './ChatBotContainer.jsx';
+  import { RotatingLines } from "react-loader-spinner";
+  import Popup from 'react-popup'
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -53,6 +56,8 @@ function Flow() {
   const store = useStoreApi();
 
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [isRequestPending, setIsRequestPending] = useState(false);
+
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   
@@ -105,10 +110,12 @@ function Flow() {
     drawElement("you", inputText);
     setSavedMessage(inputText);
     setInputText("");
+    setIsRequestPending(true);
     async function tempRunAPI(data) {
         return(promptOneMessage(data));
     }
     const outputDict = await tempRunAPI({"prompt":inputText});
+    setIsRequestPending(false);
     drawElement("shbot", outputDict["response"]);    
   }
 
@@ -133,8 +140,10 @@ function Flow() {
  	async function runAPI(data) {
 		return(runSchema(data));
 	}
+    setIsRequestPending(true);
     console.log(Chatbot)
 	const returnValue = await runAPI(data);
+    setIsRequestPending(false);
 	let chatLogOutputList = returnValue['output_text']
 	for (const chatMessage of chatLogOutputList){
 
@@ -187,13 +196,32 @@ function Flow() {
         })
   }
 
+function Loader() {
+  return (
+    <RotatingLines
+      strokeColor="purple"
+      strokeWidth="10"
+      animationDuration="0.75"
+      width="24"
+      visible={true}
+    />
+  )
+}
+function Disclaimer() {
+  useEffect(() => {
+    window.onload = () => {
+      alert('Welcome to gpt-flow! This is purely a demo to show the flowchart concept I made. There will be bugs and problems. Your data and inputs will not be saved. You can add nodes using the plus button. The title bar gives the node a name and the text box will prompt deepseek-r1 7b with text before adding any incoming prompts. Outgoing edges will send the output from deepseek-r1 to the next node, allowing you to set up multiple chatbots with their own instructions and see the output of them interacting. Try it out!');
+    };
+  }, []);
+
+  return (<></>);
+}
+
   // end of code blocks for API calls
   
   return (
     <div className="container">
-  
       <div className="otherComponents">
-
         <div style={{ width: '75vw', height: '96vh' }}>
           
           <div style={{float: 'right'}}>
@@ -205,7 +233,7 @@ function Flow() {
           </div>
           
           <div style = {{float: 'left'}}>
-            <a href="/about" target="_blank" rel="noopener noreferrer">
+            <a href="https://shawnschulz.github.io/" target="_blank" rel="noopener noreferrer">
               <img src={shblog_icon} style= {{width: 40, height: 40, position: 'relative', left: 2}}/>
             </a>
           </div>
@@ -217,8 +245,7 @@ function Flow() {
           <div style={{float: 'left', position: 'relative', left: 4}}>
             <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
-
-      
+          <Disclaimer/>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -254,6 +281,7 @@ function Flow() {
         <body>
             <div class="chat-container"> 
                 <h2 class="chat-header">GPT-flow chatbot...</h2>
+                <h2 class="chat-header"></h2>
             <div class="chat-messages">
                 <div class="message usr-bg">
                     <b class="message-sender">shbot</b>
@@ -271,10 +299,10 @@ function Flow() {
                     onChange={changeText}
                     value={inputText}
                     required placeholder="Type here..."/>
-                <button 
+                {isRequestPending? <Loader /> : <button 
                     type="submit" 
                     onClick={sendMessage}
-                    class="button send-button">Send</button>
+                    class="button send-button">Send</button>}
             </form>
               <script src="App.tsx"></script>
             </div>
