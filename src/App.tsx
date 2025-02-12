@@ -27,7 +27,6 @@ import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
 import ChatBot from './ChatBotContainer.jsx';
   import { RotatingLines } from "react-loader-spinner";
-  import Popup from 'react-popup'
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -75,12 +74,12 @@ function Flow() {
   }
 
   function downloadMessageHistory (){
-      let historyJSON = JSON.stringify(messageHistory)
+      let historyJSON = chatMessages?.textContent;
     const blob = new Blob([historyJSON], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "gpt_flow_chat_history.json";
+    link.download = "gpt_flow_chat_history.txt";
     link.click();
   }
 
@@ -207,21 +206,14 @@ function Loader() {
     />
   )
 }
-function Disclaimer() {
-  useEffect(() => {
-    window.onload = () => {
-      alert('Welcome to gpt-flow! This is purely a demo to show the flowchart concept I made. There will be bugs and problems. Your data and inputs will not be saved. You can add nodes using the plus button. The title bar gives the node a name and the text box will prompt deepseek-r1 7b with text before adding any incoming prompts. Outgoing edges will send the output from deepseek-r1 to the next node, allowing you to set up multiple chatbots with their own instructions and see the output of them interacting. Try it out!');
-    };
-  }, []);
-
-  return (<></>);
-}
 
   // end of code blocks for API calls
   
   return (
     <div className="container">
+  
       <div className="otherComponents">
+
         <div style={{ width: '75vw', height: '96vh' }}>
           
           <div style={{float: 'right'}}>
@@ -245,7 +237,8 @@ function Disclaimer() {
           <div style={{float: 'left', position: 'relative', left: 4}}>
             <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
           </div>
-          <Disclaimer/>
+
+      
             <ReactFlow
               nodes={nodes}
               edges={edges}
