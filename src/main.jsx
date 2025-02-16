@@ -7,22 +7,16 @@ import {
     RouterProvider,
 } from "react-router-dom"
 import ErrorPage from './ErrorPage.tsx'
-import AboutPage from './routes/about.tsx'
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />, 
         errorElement: <ErrorPage />,
     },
-    {
-        path: "/about",
-        element: <AboutPage/>,
-    },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RouterProvider router = {router}/>
-    <router path="/about" element={<iframe title="home_page" src="/home_page.html" />} />
   </React.StrictMode>,
 )
