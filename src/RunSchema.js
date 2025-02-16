@@ -6,7 +6,7 @@ export default runSchema
       async function sendDictionaryAndProcess(listedSchemaDict) {
         try {
 	  let json_string = JSON.stringify(listedSchemaDict)
-          const response = await fetch('http://10.8.0.2:4269/schema_json_handler', {
+          const response = await fetch('https://10.8.0.2:4269/schema_json_handler', {
             method: 'POST',
             cache: "no-store",
             headers: {

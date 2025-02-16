@@ -17,7 +17,6 @@ import {useStoreApi} from 'reactflow'
 import Chatbot from './ChatBotContainer.jsx';
 import 'react-chatbot-kit/build/main.css';
 import './App.css'
-import axios from 'axios'
 import './RunSchema.js'
 import runSchema from './RunSchema.js';
 import promptOneMessage from './RunSchema.js';
