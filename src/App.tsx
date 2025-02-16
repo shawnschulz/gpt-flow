@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import 'reactflow/dist/style.css';
 import ReactFlow, {
   Controls,
@@ -25,8 +25,8 @@ import promptOneMessage from './RunSchema.js';
 import shblog_icon from "./shblog_icon.png"
 import run_icon from "./run_icon.png"
 import plus_icon from "./plus_icon.png"
-import ChatBot from './ChatBotContainer.jsx';
-  import { RotatingLines } from "react-loader-spinner";
+
+import { RotatingLines } from "react-loader-spinner";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
