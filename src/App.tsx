@@ -184,16 +184,6 @@ function Flow() {
       };      
      };
 
-  // API calls for communication with backend
-
-  const testBackend = () => {
-    axios.get('http://127.0.0.1:5000/flask/hello').then(response => {
-          console.log("SUCCESS", response)
-          setGetMessage(response)
-        }).catch(error =>{
-          console.log(error)
-        })
-  }
 
 function Loader() {
   return (
