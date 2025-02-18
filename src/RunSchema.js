@@ -5,12 +5,12 @@ export default runSchema
  export async function runSchema(listedSchemaDict) {
       async function sendDictionaryAndProcess(listedSchemaDict) {
         try {
-            if (JSON.stringify(listedSchemaDict).length > 1) {
+            if (JSON.stringify(listedSchemaDict).length > 5000000) {
                 throw new Error('Flow json exceeds file size limit of 5 mb');
                 return
             }
 	  let json_string = JSON.stringify(listedSchemaDict);
-          const response = await fetch('https://10.8.0.2:4269/schema_json_handler', {
+          const response = await fetch('https://44.246.141.205/schema_json_handler', {
             method: 'POST',
             cache: "no-store",
             headers: {
