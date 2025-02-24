@@ -275,7 +275,7 @@ function Loader() {
                 </div>
             </div>
             <form class="chat_input">
-                <input 
+                <textarea 
                     type="text" 
                     class="chat-input" 
                     onChange={changeText}
