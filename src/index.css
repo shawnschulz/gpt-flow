@@ -36,6 +36,17 @@ h1 {
   line-height: 1.1;
 }
 
+input::file-selector-button {
+    display: none;
+}
+
+label {
+    background-color: #630169;
+    border-radius:1em;
+    border: #fff;
+    height:3em;
+    font-size:1.2em;
+}
 .chat_input textarea {
   resize: none;
   autocomplete: on;

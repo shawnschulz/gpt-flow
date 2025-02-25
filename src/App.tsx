@@ -218,7 +218,8 @@ function Loader() {
           </div>
 
           <div style={{float: 'right'}}>
-            <input type="file" name="file" accept=".json" onChange={(e) => handleFileVariable(e)} /> <button onClick={() => onRestore(selectedFile)}>Load</button>
+            <label for="json_file_upload"> Upload flow JSON </label>
+            <input class="json_input" id="json_file_upload" type="file" name="file" accept=".json" onChange={(e) => handleFileVariable(e)} /> <button onClick={() => onRestore(selectedFile)}>Load Flow JSON</button>
           </div>
           
           <div style = {{float: 'left'}}>
