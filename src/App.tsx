@@ -229,11 +229,11 @@ function Loader() {
           </div>
 
           <div style={{float: 'left', position: 'relative'}}>
-            <button onClick={addChildNode}><img src={plus_icon} style= {{marginRight: '0em', width: 20, height: 20, position: 'relative'}}/></button>
+            <button onClick={addChildNode}><img src={plus_icon} style= {{marginRight: '0em', width: 30, height: 30, position: 'relative'}}/></button>
           </div>
 
           <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{marginLeft: '0em', width: 20, height: 20, position: 'relative'}}/></button>
+            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{marginLeft: '0em', width: 30, height: 30, position: 'relative'}}/></button>
           </div>
 
       
