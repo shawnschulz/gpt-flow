@@ -46,6 +46,9 @@ h1 {
 .chat_input button {
     position: absolute;
     height:6em;
+    margin-left:0em;
+    margin-right:0em;
+    margin-top:0em;
     border-radius:1em;
     background-color: #630169;
 }
