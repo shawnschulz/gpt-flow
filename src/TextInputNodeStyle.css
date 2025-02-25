@@ -50,3 +50,24 @@
   color: white;
   pointer-events: none;
 }
+
+.react-flow__handle-right {
+    background: #FFC107 !important;
+    width: 7px !important;
+    height: 7px !important;
+}
+.react-flow__handle-top {
+    background: #1E88E5!important;
+    width: 7px !important;
+    height: 7px !important;
+}
+.react-flow__handle-left {
+    background: #1E88E5 !important;
+    width: 7px !important;
+    height: 7px !important;
+}
+.react-flow__handle-bottom {
+    background: #FFC107 !important;
+    width: 7px !important;
+    height: 7px !important;
+}
