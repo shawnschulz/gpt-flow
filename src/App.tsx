@@ -215,16 +215,16 @@ function Loader() {
           
           <div style = {{float: 'left'}}>
             <a href="https://shawnschulz.github.io/" target="_blank" rel="noopener noreferrer">
-              <img src={shblog_icon} style= {{width: 40, height: 40, position: 'relative', left: 2}}/>
+              <img src={shblog_icon} style= {{marginLeft: '1em', marginTop: '0.5em', width: 40, height: 40, position: 'relative', left: 2}}/>
             </a>
           </div>
 
-          <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onClick={addChildNode}><img src={plus_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+          <div style={{float: 'left', position: 'relative'}}>
+            <button onClick={addChildNode}><img src={plus_icon} style= {{width: 20, height: 20, position: 'relative'}}/></button>
           </div>
 
           <div style={{float: 'left', position: 'relative', left: 4}}>
-            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 30, height: 30, position: 'relative', top: -4}}/></button>
+            <button onClick={() => runFlowButton({nodes:nodes, edges:edges})}><img src={run_icon} style= {{width: 20, height: 20, position: 'relative'}}/></button>
           </div>
 
       
@@ -267,11 +267,11 @@ function Loader() {
             <div class="chat-messages">
                 <div class="message usr-bg">
                     <b class="message-sender">shbot</b>
-                    <div class="message-text">Welcome to GPT Flow!</div>
+                    <div class="message-text">Welcome to GPT Flow! shbot is currently running deepseek-r1:7b served by ollama.</div>
                 </div>
                 <div class="mesage usr-bg">
                     <b class="message-sender">shbot</b>
-                    <div class="message-text">You can type your prompt into the input below. Outputs from the flow chart will appear here automatically.</div>
+                    <div class="message-text">You can type your prompt into the input below, or construct a flow chart and run it using the play button. Outputs from the flow chart will appear here automatically.</div>
                 </div>
             </div>
             <form class="chat_input">
