@@ -82,6 +82,13 @@ function Flow() {
     link.click();
   }
 
+const onEnterPress = (e) => {
+    console.log("Debug: key press detected")
+     if(e.key == 'Enter' && e.shiftKey == false) {
+         e.preventDefault();
+         sendMessage(e);
+     }
+ }
 
   const [chatInputMessage, setChatInputMessage] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
@@ -116,6 +123,7 @@ function Flow() {
     setIsRequestPending(false);
     drawElement("shbot", outputDict["response"]);    
   }
+
 
   function drawElement(sender: string, text: string){
         message = {
@@ -199,7 +207,7 @@ function Loader() {
   // end of code blocks for API calls
   
   return (
-    <div className="container">
+    <div className="container" style={{overflow: "hidden"}}>
   
       <div className="otherComponents">
 
@@ -276,6 +284,7 @@ function Loader() {
             </div>
             <form class="chat_input">
                 <textarea 
+                    onKeyDown={onEnterPress}
                     type="text" 
                     class="chat-input" 
                     onChange={changeText}
