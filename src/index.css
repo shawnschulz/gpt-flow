@@ -118,3 +118,33 @@ button:focus-visible {
     background-color: #630169;
   }
 }
+
+@media only screen and (max-device-width: 480px) {
+button {
+  margin-left:0em;
+  margin-top:0em;
+  margin-bottom:0em;
+  border-radius: 0.5em;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  height: 3em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #630169;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+body {
+  margin: 0;
+  min-width: 64px;
+  min-height: 50vh;
+}
+.otherComponents {
+    float: left;
+}
+.json_button {
+    float: right;
+}
+
+}

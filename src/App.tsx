@@ -211,9 +211,9 @@ function Loader() {
   
       <div className="otherComponents">
 
-        <div style={{ width: '75vw', height: '96vh' }}>
+        <div className = "flow_comp_dim" style={{ width: '75vw', height: '96vh' }}>
           
-          <div style={{float: 'right'}}>
+          <div className = "json_button" style={{float: 'right'}}>
             <button onClick={() => downloadJsonButton({nodes: nodes, edges: edges})}>Download Flow as Json</button>
           </div>
 
