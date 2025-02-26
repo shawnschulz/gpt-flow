@@ -1,5 +1,4 @@
-# gpt-flow
-
+# gpt-flow ![shmage_mascot_resized](https://github.com/user-attachments/assets/bee1907a-2c75-4148-b2b4-c3ff4559453b)
 Welcome to gpt-flow! This github is mainly meant to be used for issues related to the gpt-flow web application, which you can use here: https://www.shmage.xyz/landing_page.
 
 If your a developer and would like to use the app locally, you can currently do so by installing the front end and backend locally using the following instructions:
