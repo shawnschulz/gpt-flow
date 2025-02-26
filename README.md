@@ -1,6 +1,8 @@
-# autogpt-flow
+# gpt-flow
 
-WIP! Here's how you can test the app locally:
+Welcome to gpt-flow! This github is mainly meant to be used for issues related to the gpt-flow web application, which you can use here: https://www.shmage.xyz/landing_page.
+
+If your a developer and would like to use the app locally, you can currently do so by installing the front end and backend locally using the following instructions:
 
 clone the repo:
 ```
@@ -24,34 +26,8 @@ cd gpt-flow-backend
 pip -r install requirements.txt
 python app.py 
 ```
-Getting the backend to work on your local system will require editing app.py. Go to the "ask_alpaca" function and change the model_path argument to a valid .ggml or .gguf file stored on your local system
+Getting the backend to work on your local system will require ollama and flask, which you can install using pip. Note that if you'd like to have the application run other models on your local machine, you can do so, but you'll need to edit the backend source code to do so.
 
-TODOs
 
-~~1. Add ability to add new nodes~~
-
-~~2. Add attributes to nodes, text boxes to enter prompts~~
-
-~~3. Create json/dictionary upon hitting play or download json and send it to backend for running~~
-
-~~4. Make python script to run flows properly~~
-
-~~5. Make the webserver~~
-
-~~6. Rebase experimental branch to new main branch~~
-
-~~7. Add regular chatbot functionality to text output screen~~
-
-~~8. Add way to handle graph traversal on front end so API calls to LLM can be outputted to frontend each call~~
-
-9. Create AWS hosted website for flow-chart
-
-10. Improve selection of nodes, add some hotkey for drag select, allow shift clicking to select mutliple nodes, make visual indicator that node is selected
-
-11. Incorporate hf agents, add new types of nodes such as text-image image-text text-text and nodes that are capable of running python code 
-
-13. Add option to use chatgpt api key
-
-14. Add option to run local models
 
 
