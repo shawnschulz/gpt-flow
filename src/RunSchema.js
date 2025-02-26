@@ -10,7 +10,7 @@ export default runSchema
                 return
             }
 	  let json_string = JSON.stringify(listedSchemaDict);
-          const response = await fetch('https://44.246.141.205/schema_json_handler', {
+          const response = await fetch('https://www.shmage.xyz/schema_json_handler', {
             method: 'POST',
             cache: "no-store",
             headers: {
