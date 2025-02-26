@@ -43,7 +43,8 @@ input::file-selector-button {
 label {
     background-color: #630169;
     border-radius:1em;
-    border: #fff;
+    border: #000;
+    color: #fff;
     height:3em;
     font-size:1.2em;
 }
@@ -63,6 +64,7 @@ label {
     margin-top:0em;
     border-radius:1em;
     background-color: #630169;
+    color: #fff;
 }
 .chat_input {
     padding: 0em 0em;
@@ -77,6 +79,7 @@ label {
     background-color: #9f22ab; 
     border-radius:0.3em;
     white-space: pre-wrap;
+    color: #fff
 }
 
 button {
@@ -111,6 +114,7 @@ button:focus-visible {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    color: #fff !important;
+    background-color: #630169;
   }
 }
