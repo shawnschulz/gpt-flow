@@ -223,7 +223,7 @@ function Loader() {
           </div>
           
           <div style = {{float: 'left'}}>
-            <a href="https://shawnschulz.github.io/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.shmage.xyz/landing_page" target="_blank" rel="noopener noreferrer">
               <img src={shblog_icon} style= {{marginLeft: '1em', marginTop: '0.5em', width: 40, height: 40, position: 'relative', left: 2}}/>
             </a>
           </div>
